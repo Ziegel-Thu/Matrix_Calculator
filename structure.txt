@@ -1,0 +1,15 @@
+matrix_calculator/
+├── src/
+│   ├── main.cpp
+│   ├── ui/
+│   │   ├── MainWindow.cpp
+│   │   ├── MainWindow.h
+│   │   ├── OperationWidget.cpp
+│   │   └── OperationWidget.h
+│   └── core/
+│       ├── Matrix.cpp
+│       ├── Matrix.h
+│       ├── MatrixOperations.cpp
+│       └── MatrixOperations.h
+├── matrix_calculator.pro
+└── README.md
