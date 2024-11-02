@@ -13,4 +13,14 @@ private:
     void setupUi();
     std::shared_ptr<OperationWidget> operationWidget_;
     QHBoxLayout *sideLayout;
+
+    // 添加槽函数声明
+private slots:
+    void handleLuDecomposition();
+    void handleInverse();
+    void handleDeterminant();
+    void handleQrDecomposition();
+    void handleSvdDecomposition();
+    void handleJordanForm();
+    void handleBack();
 };

@@ -18,13 +18,13 @@ OperationWidget::OperationWidget(QWidget *parent) : QWidget(parent) {
 
     layout->addWidget(label_.get());
     layout->addWidget(modeSelect_.get());
+    layout->addWidget(back_.get());
     layout->addWidget(luDecompositionButton_.get());
     layout->addWidget(inverseButton_.get());
     layout->addWidget(determinantButton_.get());
     layout->addWidget(qrDecompositionButton_.get());
     layout->addWidget(svdDecompositionButton_.get());
     layout->addWidget(jordanFormButton_.get());
-    layout->addWidget(back_.get());
 
     setLayout(layout);
 
@@ -34,6 +34,16 @@ OperationWidget::OperationWidget(QWidget *parent) : QWidget(parent) {
     qrDecompositionButton_->hide();
     svdDecompositionButton_->hide();
     jordanFormButton_->hide();
+
+    QObject::connect(modeSelect_.get(), &QPushButton::clicked, this, &OperationWidget::showFunctionButtons);
+
+    // 连接现有按钮的信号
+    connect(luDecompositionButton_.get(), &QPushButton::clicked, this, &OperationWidget::luDecompositionRequested);
+    connect(inverseButton_.get(), &QPushButton::clicked, this, &OperationWidget::inverseRequested);
+    connect(determinantButton_.get(), &QPushButton::clicked, this, &OperationWidget::determinantRequested);
+    connect(qrDecompositionButton_.get(), &QPushButton::clicked, this, &OperationWidget::qrDecompositionRequested);
+    connect(svdDecompositionButton_.get(), &QPushButton::clicked, this, &OperationWidget::svdDecompositionRequested);
+    connect(jordanFormButton_.get(), &QPushButton::clicked, this, &OperationWidget::jordanFormRequested);
 }
 
 void OperationWidget::showFunctionButtons() {
@@ -44,4 +54,5 @@ void OperationWidget::showFunctionButtons() {
     qrDecompositionButton_->show();
     svdDecompositionButton_->show();
     jordanFormButton_->show();
+    back_->show();
 }
