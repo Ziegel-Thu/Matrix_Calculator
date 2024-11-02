@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/apple/Desktop/Study/CS/C++/Matrix_Calaulator/matrix_calculator",
+      "program": "/Users/apple/Desktop/Study/CS/C++/Matrix_Calaulator/matrix_calculator/build/Debug/outDebug"
+    }
+  ]
+}
