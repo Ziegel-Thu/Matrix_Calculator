@@ -9,14 +9,20 @@ SOURCES += \
     src/main.cpp \
     src/ui/MainWindow.cpp \
     src/ui/OperationWidget.cpp \
+    src/ui/BoardWidget.cpp \
     src/core/Matrix.cpp \
-    src/core/MatrixOperations.cpp 
+    src/core/MatrixOperations.cpp \
+    src/core/Board.cpp \
+    src/core/Entry.cpp
 
 HEADERS += \
     src/ui/MainWindow.h \
     src/ui/OperationWidget.h \
+    src/ui/BoardWidget.h \
     src/core/Matrix.h \
-    src/core/MatrixOperations.h 
+    src/core/MatrixOperations.h \
+    src/core/Board.h \
+    src/core/Entry.h
 
 INCLUDEPATH += \
     src \

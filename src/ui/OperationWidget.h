@@ -2,6 +2,8 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QLabel>
+#include <QGroupBox>
+#include <QVBoxLayout>
 #pragma once
 
 class OperationWidget : public QWidget {
@@ -27,8 +29,8 @@ signals:
     void jordanFormRequested();
 
 private:
-    std::shared_ptr<QLabel> label_;
-
+    std::shared_ptr<QGroupBox> modeBox_;
+    std::shared_ptr<QGroupBox> mainBox_;
     void showFunctionButtons();
 };
     
