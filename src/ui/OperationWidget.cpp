@@ -9,14 +9,18 @@ OperationWidget::OperationWidget(QWidget *parent) : QWidget(parent) {
     
     auto mainBox_ = new QGroupBox(this);
     auto mainLayout = new QVBoxLayout(mainBox_);
-    mainBox_->setFixedSize(150, 100);
+    mainBox_->setFixedSize(150, 150);
+    
     auto modeBox_ = new QGroupBox(this);
     auto modeLayout = new QVBoxLayout(modeBox_);
-    modeBox_->setFixedSize(150,300);
+    modeBox_->setFixedSize(150, 300);
+    
     modeSelect_ = std::make_shared<QPushButton>("功 能 选 择");
+    inputSelect_ = std::make_shared<QPushButton>("输 入 方 法");
     back_ = std::make_shared<QPushButton>("返 回");
 
     mainLayout->addWidget(modeSelect_.get());
+    mainLayout->addWidget(inputSelect_.get());
     mainLayout->addWidget(back_.get());
     mainBox_->setLayout(mainLayout);
 
@@ -27,23 +31,24 @@ OperationWidget::OperationWidget(QWidget *parent) : QWidget(parent) {
     svdDecompositionButton_ = std::make_shared<QPushButton>("SVD分解");
     jordanFormButton_ = std::make_shared<QPushButton>("Jordan标准型");
 
-    layout->addWidget(mainBox_
-    );
     modeLayout->addWidget(luDecompositionButton_.get());
     modeLayout->addWidget(inverseButton_.get());
     modeLayout->addWidget(determinantButton_.get());
     modeLayout->addWidget(qrDecompositionButton_.get());
     modeLayout->addWidget(svdDecompositionButton_.get());
     modeLayout->addWidget(jordanFormButton_.get());
+    modeBox_->setLayout(modeLayout);
+
+    layout->addWidget(mainBox_);
     layout->addWidget(modeBox_);
     setLayout(layout);
+
     luDecompositionButton_->hide();
     inverseButton_->hide();
     determinantButton_->hide();
     qrDecompositionButton_->hide();
     svdDecompositionButton_->hide();
     jordanFormButton_->hide();
-
 
     QObject::connect(modeSelect_.get(), &QPushButton::clicked, this, &OperationWidget::showFunctionButtons);
 
@@ -56,12 +61,11 @@ OperationWidget::OperationWidget(QWidget *parent) : QWidget(parent) {
 }
 
 void OperationWidget::showFunctionButtons() {
-
+    
     luDecompositionButton_->show();
     inverseButton_->show();
     determinantButton_->show();
     qrDecompositionButton_->show();
     svdDecompositionButton_->show();
     jordanFormButton_->show();
-
 }
