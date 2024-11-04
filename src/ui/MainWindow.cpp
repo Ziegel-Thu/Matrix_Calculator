@@ -9,6 +9,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     setWindowTitle("矩 阵 计 算 器"); // 设置窗口标题
 
     // 连接 OperationWidget 的信号到 MainWindow 的槽
+    connect(operationWidget_.get(), &OperationWidget::iostreamInputMatrixRequested, this, &MainWindow::handleIostreamInputMatrix);
+    connect(operationWidget_.get(), &OperationWidget::fileInputMatrixRequested, this, &MainWindow::handleFileInputMatrix);
     connect(operationWidget_.get(), &OperationWidget::luDecompositionRequested, this, &MainWindow::handleLuDecomposition);
     connect(operationWidget_.get(), &OperationWidget::inverseRequested, this, &MainWindow::handleInverse);
     connect(operationWidget_.get(), &OperationWidget::determinantRequested, this, &MainWindow::handleDeterminant);
@@ -60,8 +62,19 @@ void MainWindow::handleJordanForm() {
 
 // 实现 handleBack 槽函数
 void MainWindow::handleBack() {
-    operationWidget_->hideFunctionButtons();
+    setupUi();
+
+
+}
+void MainWindow::handleFileInputMatrix() {
+    QMessageBox::information(this,"文件输入","完成功能选择将读取矩阵信息",QMessageBox::Ok);
     operationWidget_->hideInputButtons();
+    operationWidget_->showFunctionButtons();
 
 
+}
+void MainWindow::handleIostreamInputMatrix() {
+    operationWidget_->hideInputButtons();
+    operationWidget_->showFunctionButtons();
+    QMessageBox::information(this,"文件输入","完成功能选择后将读取输入矩阵信息",QMessageBox::Ok);
 }

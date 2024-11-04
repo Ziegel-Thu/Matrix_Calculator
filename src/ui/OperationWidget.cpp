@@ -20,10 +20,10 @@ OperationWidget::OperationWidget(QWidget *parent) : QWidget(parent) {
     auto inputLayout = new QVBoxLayout(inputBox_);
 
 
-    modeSelect_ = std::make_shared<QPushButton>("功 能 选 择");
+    startButton_ = std::make_shared<QPushButton>("开 始");
     back_ = std::make_shared<QPushButton>("返 回");
 
-    mainLayout->addWidget(modeSelect_.get());
+    mainLayout->addWidget(startButton_.get());
     mainLayout->addWidget(back_.get());
     mainBox_->setLayout(mainLayout);
 
@@ -58,8 +58,9 @@ OperationWidget::OperationWidget(QWidget *parent) : QWidget(parent) {
 
 
 
-    QObject::connect(modeSelect_.get(), &QPushButton::clicked, this, &OperationWidget::showFunctionButtons);
-
+    connect(startButton_.get(), &QPushButton::clicked, this, &OperationWidget::showInputButtons);
+    connect(iostreamInputButton_.get(),&QPushButton::clicked,this,&OperationWidget::iostreamInputMatrixRequested);
+    connect(fileInputButton_.get(),&QPushButton::clicked,this,&OperationWidget::fileInputMatrixRequested);
     connect(luDecompositionButton_.get(), &QPushButton::clicked, this, &OperationWidget::luDecompositionRequested);
     connect(inverseButton_.get(), &QPushButton::clicked, this, &OperationWidget::inverseRequested);
     connect(determinantButton_.get(), &QPushButton::clicked, this, &OperationWidget::determinantRequested);

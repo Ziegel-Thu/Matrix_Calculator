@@ -43,7 +43,9 @@ constexpr auto qt_meta_stringdata_CLASSOperationWidgetENDCLASS = QtMocHelpers::s
     "determinantRequested",
     "qrDecompositionRequested",
     "svdDecompositionRequested",
-    "jordanFormRequested"
+    "jordanFormRequested",
+    "fileInputMatrixRequested",
+    "iostreamInputMatrixRequested"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -56,22 +58,26 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSOperationWidgetENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-       6,   14, // methods
+       8,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       6,       // signalCount
+       8,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,   50,    2, 0x06,    1 /* Public */,
-       3,    0,   51,    2, 0x06,    2 /* Public */,
-       4,    0,   52,    2, 0x06,    3 /* Public */,
-       5,    0,   53,    2, 0x06,    4 /* Public */,
-       6,    0,   54,    2, 0x06,    5 /* Public */,
-       7,    0,   55,    2, 0x06,    6 /* Public */,
+       1,    0,   62,    2, 0x06,    1 /* Public */,
+       3,    0,   63,    2, 0x06,    2 /* Public */,
+       4,    0,   64,    2, 0x06,    3 /* Public */,
+       5,    0,   65,    2, 0x06,    4 /* Public */,
+       6,    0,   66,    2, 0x06,    5 /* Public */,
+       7,    0,   67,    2, 0x06,    6 /* Public */,
+       8,    0,   68,    2, 0x06,    7 /* Public */,
+       9,    0,   69,    2, 0x06,    8 /* Public */,
 
  // signals: parameters
+    QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -102,6 +108,10 @@ Q_CONSTINIT const QMetaObject OperationWidget::staticMetaObject = { {
         // method 'svdDecompositionRequested'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'jordanFormRequested'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'fileInputMatrixRequested'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'iostreamInputMatrixRequested'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -119,6 +129,8 @@ void OperationWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         case 3: _t->qrDecompositionRequested(); break;
         case 4: _t->svdDecompositionRequested(); break;
         case 5: _t->jordanFormRequested(); break;
+        case 6: _t->fileInputMatrixRequested(); break;
+        case 7: _t->iostreamInputMatrixRequested(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -165,6 +177,20 @@ void OperationWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
                 return;
             }
         }
+        {
+            using _t = void (OperationWidget::*)();
+            if (_t _q_method = &OperationWidget::fileInputMatrixRequested; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+                *result = 6;
+                return;
+            }
+        }
+        {
+            using _t = void (OperationWidget::*)();
+            if (_t _q_method = &OperationWidget::iostreamInputMatrixRequested; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+                *result = 7;
+                return;
+            }
+        }
     }
     (void)_a;
 }
@@ -188,13 +214,13 @@ int OperationWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 6)
+        if (_id < 8)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 6;
+        _id -= 8;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 6)
+        if (_id < 8)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 6;
+        _id -= 8;
     }
     return _id;
 }
@@ -233,5 +259,17 @@ void OperationWidget::svdDecompositionRequested()
 void OperationWidget::jordanFormRequested()
 {
     QMetaObject::activate(this, &staticMetaObject, 5, nullptr);
+}
+
+// SIGNAL 6
+void OperationWidget::fileInputMatrixRequested()
+{
+    QMetaObject::activate(this, &staticMetaObject, 6, nullptr);
+}
+
+// SIGNAL 7
+void OperationWidget::iostreamInputMatrixRequested()
+{
+    QMetaObject::activate(this, &staticMetaObject, 7, nullptr);
 }
 QT_WARNING_POP
