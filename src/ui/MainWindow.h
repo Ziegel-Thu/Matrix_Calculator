@@ -25,4 +25,6 @@ private slots:
     void handleSvdDecomposition();
     void handleJordanForm();
     void handleBack();
+    void handleFileInputMatrix();
+    void handleIostreamInputMatrix();
 };

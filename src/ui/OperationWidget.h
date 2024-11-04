@@ -12,7 +12,7 @@ public:
     explicit OperationWidget(QWidget *parent = nullptr);
 
     std::shared_ptr<QPushButton> back_;
-    std::shared_ptr<QPushButton> modeSelect_;
+    std::shared_ptr<QPushButton> startButton_;
     std::shared_ptr<QPushButton> luDecompositionButton_;
     std::shared_ptr<QPushButton> inverseButton_;
     std::shared_ptr<QPushButton> determinantButton_;
@@ -33,6 +33,8 @@ signals:
     void qrDecompositionRequested();
     void svdDecompositionRequested();
     void jordanFormRequested();
+    void fileInputMatrixRequested();
+    void iostreamInputMatrixRequested();
 
 
 private:
