@@ -21,10 +21,11 @@ void MainWindow::setupUi(){
     auto centralWidget = new QWidget(this);
     auto mainLayout = new QHBoxLayout(centralWidget); // 使用水平布局
     operationWidget_ = std::make_shared<OperationWidget>(this);
-    boardWidget_ = std::make_shared<BoardWidget>(3, 3, this); // 创建 3x3 的棋盘
+    //boardWidget_ = std::make_shared<BoardWidget>(3, 3, this); // 创建 3x3 的棋盘
     mainLayout->addWidget(boardWidget_.get()); 
     mainLayout->addWidget(operationWidget_.get()); 
-
+    operationWidget_->hideFunctionButtons();
+    operationWidget_->hideInputButtons();
     setCentralWidget(centralWidget);
 
     // 连接 back 按钮的信号
@@ -59,12 +60,8 @@ void MainWindow::handleJordanForm() {
 
 // 实现 handleBack 槽函数
 void MainWindow::handleBack() {
-    // 处理返回逻辑，例如隐藏功能按钮并显示模式选择按钮
-    operationWidget_->modeSelect_->show();
-    operationWidget_->luDecompositionButton_->hide();
-    operationWidget_->inverseButton_->hide();
-    operationWidget_->determinantButton_->hide();
-    operationWidget_->qrDecompositionButton_->hide();
-    operationWidget_->svdDecompositionButton_->hide();
-    operationWidget_->jordanFormButton_->hide();
+    operationWidget_->hideFunctionButtons();
+    operationWidget_->hideInputButtons();
+
+
 }

@@ -13,13 +13,18 @@ public:
 
     std::shared_ptr<QPushButton> back_;
     std::shared_ptr<QPushButton> modeSelect_;
-    std::shared_ptr<QPushButton> inputSelect_;
     std::shared_ptr<QPushButton> luDecompositionButton_;
     std::shared_ptr<QPushButton> inverseButton_;
     std::shared_ptr<QPushButton> determinantButton_;
     std::shared_ptr<QPushButton> qrDecompositionButton_;
     std::shared_ptr<QPushButton> svdDecompositionButton_;
     std::shared_ptr<QPushButton> jordanFormButton_;
+    std::shared_ptr<QPushButton> iostreamInputButton_;
+    std::shared_ptr<QPushButton> fileInputButton_;
+    void showFunctionButtons();
+    void hideFunctionButtons();
+    void showInputButtons();
+    void hideInputButtons();
 
 signals:
     void luDecompositionRequested();
@@ -29,9 +34,12 @@ signals:
     void svdDecompositionRequested();
     void jordanFormRequested();
 
+
 private:
     std::shared_ptr<QGroupBox> modeBox_;
     std::shared_ptr<QGroupBox> mainBox_;
-    void showFunctionButtons();
+    std::shared_ptr<QGroupBox> inputBox_;
+
+
 };
     
