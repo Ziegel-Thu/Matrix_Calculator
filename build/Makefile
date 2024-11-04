@@ -1344,7 +1344,9 @@ OperationWidget.o: ../src/ui/OperationWidget.cpp ../src/ui/OperationWidget.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/QGroupBox \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/qgroupbox.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/QVBoxLayout \
-		/opt/homebrew/lib/QtWidgets.framework/Headers/qboxlayout.h
+		/opt/homebrew/lib/QtWidgets.framework/Headers/qboxlayout.h \
+		/opt/homebrew/lib/QtWidgets.framework/Headers/QLineEdit \
+		/opt/homebrew/lib/QtWidgets.framework/Headers/qlineedit.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o OperationWidget.o ../src/ui/OperationWidget.cpp
 
 BoardWidget.o: ../src/ui/BoardWidget.cpp ../src/ui/BoardWidget.h \

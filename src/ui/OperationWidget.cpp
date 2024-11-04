@@ -3,6 +3,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QGroupBox>
+#include <QLineEdit>
 
 OperationWidget::OperationWidget(QWidget *parent) : QWidget(parent) {
     auto layout = new QVBoxLayout(this);
@@ -15,14 +16,25 @@ OperationWidget::OperationWidget(QWidget *parent) : QWidget(parent) {
     auto modeLayout = new QVBoxLayout(modeBox_);
     modeBox_->setFixedSize(150, 300);
     
+    auto inputBox_ = new QGroupBox(this);
+    auto inputLayout = new QVBoxLayout(inputBox_);
+
+
     modeSelect_ = std::make_shared<QPushButton>("功 能 选 择");
-    inputSelect_ = std::make_shared<QPushButton>("输 入 方 法");
     back_ = std::make_shared<QPushButton>("返 回");
 
     mainLayout->addWidget(modeSelect_.get());
-    mainLayout->addWidget(inputSelect_.get());
     mainLayout->addWidget(back_.get());
     mainBox_->setLayout(mainLayout);
+
+    inputBox_->setFixedSize(150, 100);
+    iostreamInputButton_ = std::make_shared<QPushButton>("标准输入", this);
+    fileInputButton_ = std::make_shared<QPushButton>("文件输入", this);
+    
+
+    inputLayout->addWidget(iostreamInputButton_.get());
+    inputLayout->addWidget(fileInputButton_.get());
+    inputBox_->setLayout(inputLayout);
 
     luDecompositionButton_ = std::make_shared<QPushButton>("LU分解");
     inverseButton_ = std::make_shared<QPushButton>("求逆");
@@ -41,14 +53,10 @@ OperationWidget::OperationWidget(QWidget *parent) : QWidget(parent) {
 
     layout->addWidget(mainBox_);
     layout->addWidget(modeBox_);
+    layout->addWidget(inputBox_);
     setLayout(layout);
 
-    luDecompositionButton_->hide();
-    inverseButton_->hide();
-    determinantButton_->hide();
-    qrDecompositionButton_->hide();
-    svdDecompositionButton_->hide();
-    jordanFormButton_->hide();
+
 
     QObject::connect(modeSelect_.get(), &QPushButton::clicked, this, &OperationWidget::showFunctionButtons);
 
@@ -61,11 +69,27 @@ OperationWidget::OperationWidget(QWidget *parent) : QWidget(parent) {
 }
 
 void OperationWidget::showFunctionButtons() {
-    
     luDecompositionButton_->show();
     inverseButton_->show();
     determinantButton_->show();
     qrDecompositionButton_->show();
     svdDecompositionButton_->show();
     jordanFormButton_->show();
+}
+void OperationWidget::hideFunctionButtons() {
+    luDecompositionButton_->hide();
+    inverseButton_->hide();
+    determinantButton_->hide();
+    qrDecompositionButton_->hide();
+    svdDecompositionButton_->hide();
+    jordanFormButton_->hide();
+}
+void OperationWidget::showInputButtons(){
+    iostreamInputButton_->show();
+    fileInputButton_->show();
+}
+void OperationWidget::hideInputButtons(){
+
+    iostreamInputButton_->hide();
+    fileInputButton_->hide();
 }
