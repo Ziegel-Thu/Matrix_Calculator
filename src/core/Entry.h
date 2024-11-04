@@ -3,16 +3,16 @@
 
 class Entry {
 public:
-    Entry(int numerator, int denominator);
+    Entry(long long numerator, long long denominator);
 
     // 获取分子和分母
-    int getNumerator() const;
-    int getDenominator() const;
+    long long getNumerator() const;
+    long long getDenominator() const;
 
     // 约分方法
     void reduce();
 
 private:
-    std::pair<int, int> fraction_; // 存储分数的分子和分母
-    int gcd(int a, int b) const; // 计算最大公约数
+    std::pair<long long, long long> fraction_; // 存储分数的分子和分母
+    long long gcd(long long a, long long b) const; // 计算最大公约数
 };

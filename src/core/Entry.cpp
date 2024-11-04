@@ -1,40 +1,39 @@
 #include "Entry.h"
 #include <stdexcept>
 
-Entry::Entry(int numerator, int denominator) {
+Entry::Entry(long long numerator, long long denominator) {
     if (denominator == 0) {
-        throw std::invalid_argument("Denominator cannot be zero"); // 检查分母是否为零
+        throw std::invalid_argument("Denominator cannot be zero");
     }
     fraction_ = {numerator, denominator};
-    reduce(); // 初始化时自动约分
+    reduce();
 }
 
-int Entry::getNumerator() const {
-    return fraction_.first; // 返回分子
+long long Entry::getNumerator() const {
+    return fraction_.first;
 }
 
-int Entry::getDenominator() const {
-    return fraction_.second; // 返回分母
+long long Entry::getDenominator() const {
+    return fraction_.second;
 }
 
-int Entry::gcd(int a, int b) const {
+long long Entry::gcd(long long a, long long b) const {
     while (b != 0) {
-        int temp = b;
+        long long temp = b;
         b = a % b;
         a = temp;
     }
-    return a; // 返回最大公约数
+    return a;
 }
 
 void Entry::reduce() {
-    int numerator = fraction_.first;
-    int denominator = fraction_.second;
-    int divisor = gcd(numerator, denominator); // 计算最大公约数
+    long long numerator = fraction_.first;
+    long long denominator = fraction_.second;
+    long long divisor = gcd(numerator, denominator);
 
-    fraction_.first = numerator / divisor; // 约分分子
-    fraction_.second = denominator / divisor; // 约分分母
+    fraction_.first = numerator / divisor;
+    fraction_.second = denominator / divisor;
 
-    // 确保分母为正
     if (fraction_.second < 0) {
         fraction_.first = -fraction_.first;
         fraction_.second = -fraction_.second;
