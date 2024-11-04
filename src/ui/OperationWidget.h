@@ -13,6 +13,7 @@ public:
 
     std::shared_ptr<QPushButton> back_;
     std::shared_ptr<QPushButton> modeSelect_;
+    std::shared_ptr<QPushButton> inputSelect_;
     std::shared_ptr<QPushButton> luDecompositionButton_;
     std::shared_ptr<QPushButton> inverseButton_;
     std::shared_ptr<QPushButton> determinantButton_;
