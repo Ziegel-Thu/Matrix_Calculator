@@ -6,6 +6,7 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     setupUi();
+    setWindowTitle("矩 阵 计 算 器"); // 设置窗口标题
 
     // 连接 OperationWidget 的信号到 MainWindow 的槽
     connect(operationWidget_.get(), &OperationWidget::luDecompositionRequested, this, &MainWindow::handleLuDecomposition);
@@ -16,15 +17,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     connect(operationWidget_.get(), &OperationWidget::jordanFormRequested, this, &MainWindow::handleJordanForm);
 }
 
-std::shared_ptr<OperationWidget> MainWindow::getOperationWidget() const {
-    return operationWidget_;
-}
-
 void MainWindow::setupUi(){
     auto centralWidget = new QWidget(this);
-    auto mainLayout = new QHBoxLayout(centralWidget);
+    auto mainLayout = new QHBoxLayout(centralWidget); // 使用水平布局
     operationWidget_ = std::make_shared<OperationWidget>(this);
-    mainLayout->addWidget(operationWidget_.get());
+    boardWidget_ = std::make_shared<BoardWidget>(3, 3, this); // 创建 3x3 的棋盘
+    mainLayout->addWidget(boardWidget_.get()); 
+    mainLayout->addWidget(operationWidget_.get()); 
+
     setCentralWidget(centralWidget);
 
     // 连接 back 按钮的信号
@@ -33,7 +33,8 @@ void MainWindow::setupUi(){
 
 // 槽函数实现
 void MainWindow::handleLuDecomposition() {
-    // 执行 LU 分解的逻辑
+
+    
 }
 
 void MainWindow::handleInverse() {
@@ -66,5 +67,4 @@ void MainWindow::handleBack() {
     operationWidget_->qrDecompositionButton_->hide();
     operationWidget_->svdDecompositionButton_->hide();
     operationWidget_->jordanFormButton_->hide();
-    operationWidget_->back_->hide();
 }

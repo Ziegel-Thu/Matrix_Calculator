@@ -1,6 +1,7 @@
 #include <QMainWindow>
 #include <memory>
 #include "OperationWidget.h"
+#include "BoardWidget.h"
 #include <QHBoxLayout>
 
 class MainWindow : public QMainWindow {
@@ -12,6 +13,7 @@ public:
 private:
     void setupUi();
     std::shared_ptr<OperationWidget> operationWidget_;
+    std::shared_ptr<BoardWidget> boardWidget_;
     QHBoxLayout *sideLayout;
 
     // 添加槽函数声明

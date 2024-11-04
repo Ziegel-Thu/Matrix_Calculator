@@ -5,11 +5,17 @@ matrix_calculator/
 │   │   ├── MainWindow.cpp
 │   │   ├── MainWindow.h
 │   │   ├── OperationWidget.cpp
-│   │   └── OperationWidget.h
+│   │   ├── OperationWidget.h
+│   │   ├── BoardWidget.cpp
+│   │   └── BoardWidget.h
 │   └── core/
 │       ├── Matrix.cpp
 │       ├── Matrix.h
 │       ├── MatrixOperations.cpp
-│       └── MatrixOperations.h
+│       ├── MatrixOperations.h
+│       ├── Board.cpp
+│       ├── Board.h
+│       ├── Entry.cpp
+│       └── Entry.h
 ├── matrix_calculator.pro
 └── README.md
