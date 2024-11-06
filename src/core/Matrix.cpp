@@ -1,7 +1,9 @@
 #include "Matrix.h"
 
+#include <iostream>
 Matrix::Matrix(int rows, int cols) : rows_(rows), cols_(cols) {
     data_.resize(rows, std::vector<Entry>(cols, Entry(0, 1))); // 初始化矩阵，默认值为 0/1
+
 }
 
 int Matrix::getRows() const {
@@ -16,20 +18,32 @@ Entry Matrix::getEntry(int row, int col) const {
     if (row < 0 || row >= rows_ || col < 0 || col >= cols_) {
         throw std::out_of_range("Index out of range"); // 检查索引范围
     }
-    return data_[row][col]; // 返回指定位置的元素
+    if (data_[row][col].hasValue_) {
+        return data_[row][col]; // 返回指定位置的元素
+    } else {
+        throw std::invalid_argument("Entry has no value"); // 检查元素是否有值
+    }
+}
+
+bool Matrix::hasValue(int row, int col) const {
+    return data_[row][col].hasValue_;
 }
 
 void Matrix::setEntry(int row, int col, const Entry& value) {
+
     if (row < 0 || row >= rows_ || col < 0 || col >= cols_) {
         throw std::out_of_range("Index out of range"); // 检查索引范围
     }
     data_[row][col] = value; // 设置指定位置的元素
+    data_[row][col].hasValue_ = true;
 }
 
 void Matrix::reduceAll() {
     for (int i = 0; i < rows_; ++i) {
         for (int j = 0; j < cols_; ++j) {
-            data_[i][j].reduce(); // 对每个元素进行约分
+            if (data_[i][j].hasValue_) {
+                data_[i][j].reduce();
+            } // 对每个元素进行约分
         }
     }
 }

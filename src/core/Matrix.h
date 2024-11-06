@@ -22,8 +22,11 @@ public:
     // 整体约分操作
     void reduceAll();
 
+    bool hasValue(int row, int col) const;
+
 private:
     int rows_; // 行数
     int cols_; // 列数
+
     std::vector<std::vector<Entry>> data_; // 矩阵数据，使用 Entry 类型
 };
