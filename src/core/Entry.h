@@ -8,9 +8,12 @@ public:
     // 获取分子和分母
     long long getNumerator() const;
     long long getDenominator() const;
+    bool hasValue_; // 添加此行以定义 hasValue_ 变量
+
 
     // 约分方法
     void reduce();
+
 
 private:
     std::pair<long long, long long> fraction_; // 存储分数的分子和分母

@@ -22,11 +22,16 @@ BoardWidget::BoardWidget(int rows, int cols, QWidget *parent)
 void BoardWidget::setMatrix(const Matrix& matrix) {
     for (int i = 0; i < matrix.getRows(); ++i) {
         for (int j = 0; j < matrix.getCols(); ++j) {
-            Entry entry = matrix.getEntry(i, j);
-            if (entry.getDenominator() == 1) {
-                labels_[i][j]->setText(QString::number(entry.getNumerator())); // 只显示分子
+
+            if (matrix.hasValue(i, j)) {
+                Entry entry = matrix.getEntry(i, j);
+                if (entry.getDenominator() == 1) {
+                    labels_[i][j]->setText(QString::number(entry.getNumerator())); // 只显示分子
+                } else {
+                    labels_[i][j]->setText(QString("%1/%2").arg(entry.getNumerator()).arg(entry.getDenominator())); // 显示分子和分母
+                }
             } else {
-                labels_[i][j]->setText(QString("%1/%2").arg(entry.getNumerator()).arg(entry.getDenominator())); // 显示分子和分母
+                labels_[i][j]->setText(""); // 没有值则显示空白
             }
         }
     }

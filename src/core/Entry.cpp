@@ -7,6 +7,7 @@ Entry::Entry(long long numerator, long long denominator) {
     }
     fraction_ = {numerator, denominator};
     reduce();
+    hasValue_ = false;
 }
 
 long long Entry::getNumerator() const {
@@ -39,3 +40,5 @@ void Entry::reduce() {
         fraction_.second = -fraction_.second;
     }
 }
+
+

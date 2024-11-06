@@ -94,13 +94,8 @@ void MainWindow::handleIostreamInputMatrix() {
         int cols = sizes[1].toInt(&colsOk);
 
         if (!rowsOk || !colsOk || rows <= 0 || cols <= 0) {
-            QMessageBox::StandardButton reply;
-            reply = QMessageBox::question(this, "输入错误", "请输入有效的行数和列数（必须为正整数），是否退出？", QMessageBox::Yes | QMessageBox::No);
-            if (reply == QMessageBox::Yes) {
-                return; // 用户选择退出
-            } else {
-                return; // 继续输入
-            }
+            QMessageBox::warning(this, "输入错误", "请输入有效的行数和列数（必须为正整数）", QMessageBox::Ok);
+            return; // 退出函数，等待用户重新输入
         }
 
         // 创建 BoardWidget 并添加到布局
@@ -114,31 +109,22 @@ void MainWindow::handleIostreamInputMatrix() {
 
         for (int i = 0; i < rows; ++i) {
             for (int j = 0; j < cols; ++j) {
-                QString input = QInputDialog::getText(this, "输入矩阵元素", QString("请输入第 %1 行第 %2 列的元素:").arg(i + 1).arg(j + 1), QLineEdit::Normal, "", &ok);
-                if (ok) {
+                bool ok2;
+                QString input = QInputDialog::getText(this, "输入矩阵元素", QString("请输入第 %1 行第 %2 列的元素:").arg(i + 1).arg(j + 1), QLineEdit::Normal, "", &ok2);
+                if (ok2) {
                     if (input.isEmpty()) {
-                        QMessageBox::StandardButton reply;
-                        reply = QMessageBox::question(this, "输入错误", "输入不能为空，请重新输入，是否退出？", QMessageBox::Yes | QMessageBox::No);
-                        if (reply == QMessageBox::Yes) {
-                            return; // 用户选择退出
-                        } else {
-                            j--; // 重新输入当前元素
-                            continue; // 跳过当前循环，等待用户重新输入
-                        }
+                        QMessageBox::warning(this, "输入错误", "输入不能为空，请重新输入。", QMessageBox::Ok);
+                        j--; // 重新输入当前元素
+                        continue; // 跳过当前循环，等待用户重新输入
                     }
 
                     // 检查输入是否为分数
                     if (input.contains("/")) {
                         QStringList parts = input.split("/");
                         if (parts.size() != 2) {
-                            QMessageBox::StandardButton reply;
-                            reply = QMessageBox::question(this, "输入错误", "分数格式不正确，请输入如 'a/b' 的格式，是否退出？", QMessageBox::Yes | QMessageBox::No);
-                            if (reply == QMessageBox::Yes) {
-                                return; // 用户选择退出
-                            } else {
-                                j--; // 重新输入当前元素
-                                continue; // 跳过当前循环，等待用户重新输入
-                            }
+                            QMessageBox::warning(this, "输入错误", "分数格式不正确，请输入如 'a/b' 的格式。", QMessageBox::Ok);
+
+                            continue; // 跳过当前循环，等待用户重新输入
                         }
 
                         bool numeratorOk, denominatorOk;
@@ -146,14 +132,9 @@ void MainWindow::handleIostreamInputMatrix() {
                         long long denominator = parts[1].toLongLong(&denominatorOk);
 
                         if (!numeratorOk || !denominatorOk || denominator == 0) {
-                            QMessageBox::StandardButton reply;
-                            reply = QMessageBox::question(this, "输入错误", "分母不能为0，请重新输入，是否退出？", QMessageBox::Yes | QMessageBox::No);
-                            if (reply == QMessageBox::Yes) {
-                                return; // 用户选择退出
-                            } else {
-                                j--; // 重新输入当前元素
-                                continue; // 跳过当前循环，等待用户重新输入
-                            }
+                            QMessageBox::warning(this, "输入错误", "分母不能为0，请重新输入。", QMessageBox::Ok);
+
+                            continue; // 跳过当前循环，等待用户重新输入
                         }
 
                         matrix.setEntry(i, j, Entry(numerator, denominator)); // 使用 setEntry 方法设置矩阵元素
@@ -162,18 +143,12 @@ void MainWindow::handleIostreamInputMatrix() {
                         bool integerOk;
                         long long numerator = input.toLongLong(&integerOk);
                         if (!integerOk) {
-                            QMessageBox::StandardButton reply;
-                            reply = QMessageBox::question(this, "输入错误", "请输入有效的整数，请重新输入，是否退出？", QMessageBox::Yes | QMessageBox::No);
-                            if (reply == QMessageBox::Yes) {
-                                return; // 用户选择退出
-                            } else {
-                                j--; // 重新输入当前元素
-                                continue; // 跳过当前循环，等待用户重新输入
-                            }
+                            QMessageBox::warning(this, "输入错误", "请输入有效的整数。", QMessageBox::Ok);
+                            continue; // 跳过当前循环，等待用户重新输入
                         }
+
                         matrix.setEntry(i, j, Entry(numerator, 1)); // 分母设为1
                     }
-
                     // 每次输入后更新 BoardWidget
                     boardWidget_->setMatrix(matrix); // 更新 BoardWidget 显示矩阵
                 } else {
@@ -183,7 +158,7 @@ void MainWindow::handleIostreamInputMatrix() {
                     if (reply == QMessageBox::Yes) {
                         return; // 用户选择退出
                     } else {
-                        j--; // 重新输入当前元素
+                        continue; // 重新输入当前元素
                     }
                 }
             }
