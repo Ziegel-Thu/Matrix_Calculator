@@ -28,7 +28,7 @@ OperationWidget::OperationWidget(QWidget *parent) : QWidget(parent) {
     mainBox_->setLayout(mainLayout);
 
     inputBox_->setFixedSize(150, 100);
-    iostreamInputButton_ = std::make_shared<QPushButton>("标准输入", this);
+    iostreamInputButton_ = std::make_shared<QPushButton>("输入流输入", this);
     fileInputButton_ = std::make_shared<QPushButton>("文件输入", this);
     
 

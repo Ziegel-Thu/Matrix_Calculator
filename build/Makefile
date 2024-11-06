@@ -57,7 +57,6 @@ SOURCES       = ../src/main.cpp \
 		../src/ui/OperationWidget.cpp \
 		../src/ui/BoardWidget.cpp \
 		../src/core/Matrix.cpp \
-		../src/core/MatrixOperations.cpp \
 		../src/core/Board.cpp \
 		../src/core/Entry.cpp moc_MainWindow.cpp \
 		moc_OperationWidget.cpp \
@@ -67,7 +66,6 @@ OBJECTS       = main.o \
 		OperationWidget.o \
 		BoardWidget.o \
 		Matrix.o \
-		MatrixOperations.o \
 		Board.o \
 		Entry.o \
 		moc_MainWindow.o \
@@ -421,14 +419,12 @@ DIST          = /opt/homebrew/share/qt/mkspecs/features/spec_pre.prf \
 		../src/ui/OperationWidget.h \
 		../src/ui/BoardWidget.h \
 		../src/core/Matrix.h \
-		../src/core/MatrixOperations.h \
 		../src/core/Board.h \
 		../src/core/Entry.h ../src/main.cpp \
 		../src/ui/MainWindow.cpp \
 		../src/ui/OperationWidget.cpp \
 		../src/ui/BoardWidget.cpp \
 		../src/core/Matrix.cpp \
-		../src/core/MatrixOperations.cpp \
 		../src/core/Board.cpp \
 		../src/core/Entry.cpp
 QMAKE_TARGET  = matrix_calculator
@@ -1177,8 +1173,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /opt/homebrew/share/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../src/ui/MainWindow.h ../src/ui/OperationWidget.h ../src/ui/BoardWidget.h ../src/core/Matrix.h ../src/core/MatrixOperations.h ../src/core/Board.h ../src/core/Entry.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../src/main.cpp ../src/ui/MainWindow.cpp ../src/ui/OperationWidget.cpp ../src/ui/BoardWidget.cpp ../src/core/Matrix.cpp ../src/core/MatrixOperations.cpp ../src/core/Board.cpp ../src/core/Entry.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../src/ui/MainWindow.h ../src/ui/OperationWidget.h ../src/ui/BoardWidget.h ../src/core/Matrix.h ../src/core/Board.h ../src/core/Entry.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../src/main.cpp ../src/ui/MainWindow.cpp ../src/ui/OperationWidget.cpp ../src/ui/BoardWidget.cpp ../src/core/Matrix.cpp ../src/core/Board.cpp ../src/core/Entry.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -1331,7 +1327,11 @@ MainWindow.o: ../src/ui/MainWindow.cpp ../src/ui/MainWindow.h \
 		../src/core/Entry.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/QHBoxLayout \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/QMessageBox \
-		/opt/homebrew/lib/QtWidgets.framework/Headers/qmessagebox.h
+		/opt/homebrew/lib/QtWidgets.framework/Headers/qmessagebox.h \
+		/opt/homebrew/lib/QtWidgets.framework/Headers/QInputDialog \
+		/opt/homebrew/lib/QtWidgets.framework/Headers/qinputdialog.h \
+		/opt/homebrew/lib/QtWidgets.framework/Headers/QLineEdit \
+		/opt/homebrew/lib/QtWidgets.framework/Headers/qlineedit.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o MainWindow.o ../src/ui/MainWindow.cpp
 
 OperationWidget.o: ../src/ui/OperationWidget.cpp ../src/ui/OperationWidget.h \
@@ -1363,9 +1363,6 @@ BoardWidget.o: ../src/ui/BoardWidget.cpp ../src/ui/BoardWidget.h \
 Matrix.o: ../src/core/Matrix.cpp ../src/core/Matrix.h \
 		../src/core/Entry.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Matrix.o ../src/core/Matrix.cpp
-
-MatrixOperations.o: ../src/core/MatrixOperations.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o MatrixOperations.o ../src/core/MatrixOperations.cpp
 
 Board.o: ../src/core/Board.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Board.o ../src/core/Board.cpp
