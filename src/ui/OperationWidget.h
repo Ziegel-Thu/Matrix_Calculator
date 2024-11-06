@@ -27,6 +27,7 @@ public:
     void hideInputButtons();
 
 signals:
+    //void startRequested();
     void luDecompositionRequested();
     void inverseRequested();
     void determinantRequested();

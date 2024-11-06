@@ -18,6 +18,7 @@ private:
 
     // 添加槽函数声明
 private slots:
+    //void startHandle();
     void handleLuDecomposition();
     void handleInverse();
     void handleDeterminant();
@@ -27,4 +28,5 @@ private slots:
     void handleBack();
     void handleFileInputMatrix();
     void handleIostreamInputMatrix();
+
 };
