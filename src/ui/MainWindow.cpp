@@ -83,9 +83,6 @@ void MainWindow::handleFileInputMatrix() {
 
 }
 void MainWindow::handleIostreamInputMatrix() {
-
-
-
     // 使用 QInputDialog 获取矩阵的大小
     bool ok;
     QString sizeInput = QInputDialog::getText(this, "输入矩阵大小", "请输入矩阵的行数和列数（用空格分隔）:", QLineEdit::Normal, "", &ok);
@@ -97,32 +94,51 @@ void MainWindow::handleIostreamInputMatrix() {
         int cols = sizes[1].toInt(&colsOk);
 
         if (!rowsOk || !colsOk || rows <= 0 || cols <= 0) {
-            QMessageBox::warning(this, "输入错误", "请输入有效的行数和列数（必须为正整数）", QMessageBox::Ok);
-            return; // 退出函数，等待用户重新输入
+            QMessageBox::StandardButton reply;
+            reply = QMessageBox::question(this, "输入错误", "请输入有效的行数和列数（必须为正整数），是否退出？", QMessageBox::Yes | QMessageBox::No);
+            if (reply == QMessageBox::Yes) {
+                return; // 用户选择退出
+            } else {
+                return; // 继续输入
+            }
         }
 
-        // 创建一个矩阵并读取元素
-        std::vector<std::vector<Entry>> matrix(rows, std::vector<Entry>(cols, Entry(0, 1)));
+        // 创建 BoardWidget 并添加到布局
+        boardWidget_ = std::make_shared<BoardWidget>(rows, cols, this);
+        auto centralWidget = this->centralWidget();
+        auto mainLayout = centralWidget->layout();
+        mainLayout->addWidget(boardWidget_.get()); // 将 boardWidget 添加到布局中
+
+        // 创建一个 Matrix 实例
+        Matrix matrix(rows, cols); // 使用原构造函数创建 Matrix 实例
+
         for (int i = 0; i < rows; ++i) {
             for (int j = 0; j < cols; ++j) {
-                bool ok2;
-                QString input = QInputDialog::getText(this, "输入矩阵元素", QString("请输入第 %1 行第 %2 列的元素:").arg(i + 1).arg(j + 1), QLineEdit::Normal, "", &ok2);
-                if (ok2) {
+                QString input = QInputDialog::getText(this, "输入矩阵元素", QString("请输入第 %1 行第 %2 列的元素:").arg(i + 1).arg(j + 1), QLineEdit::Normal, "", &ok);
+                if (ok) {
                     if (input.isEmpty()) {
-                        // 处理只输入一个数的情况
-                        // 这里可以添加对空输入的处理
-                        QMessageBox::warning(this, "输入错误", "输入不能为空，请重新输入。", QMessageBox::Ok);
-                        j--; // 重新输入当前元素
-                        continue; // 跳过当前循环，等待用户重新输入
+                        QMessageBox::StandardButton reply;
+                        reply = QMessageBox::question(this, "输入错误", "输入不能为空，请重新输入，是否退出？", QMessageBox::Yes | QMessageBox::No);
+                        if (reply == QMessageBox::Yes) {
+                            return; // 用户选择退出
+                        } else {
+                            j--; // 重新输入当前元素
+                            continue; // 跳过当前循环，等待用户重新输入
+                        }
                     }
 
                     // 检查输入是否为分数
                     if (input.contains("/")) {
                         QStringList parts = input.split("/");
                         if (parts.size() != 2) {
-                            QMessageBox::warning(this, "输入错误", "分数格式不正确，请输入如 'a/b' 的格式。", QMessageBox::Ok);
-                            j--; // 重新输入当前元素
-                            continue; // 跳过当前循环，等待用户重新输入
+                            QMessageBox::StandardButton reply;
+                            reply = QMessageBox::question(this, "输入错误", "分数格式不正确，请输入如 'a/b' 的格式，是否退出？", QMessageBox::Yes | QMessageBox::No);
+                            if (reply == QMessageBox::Yes) {
+                                return; // 用户选择退出
+                            } else {
+                                j--; // 重新输入当前元素
+                                continue; // 跳过当前循环，等待用户重新输入
+                            }
                         }
 
                         bool numeratorOk, denominatorOk;
@@ -130,24 +146,36 @@ void MainWindow::handleIostreamInputMatrix() {
                         long long denominator = parts[1].toLongLong(&denominatorOk);
 
                         if (!numeratorOk || !denominatorOk || denominator == 0) {
-                            QMessageBox::warning(this, "输入错误", "分母不能为0，请重新输入。", QMessageBox::Ok);
-                            j--; // 重新输入当前元素
-                            continue; // 跳过当前循环，等待用户重新输入
+                            QMessageBox::StandardButton reply;
+                            reply = QMessageBox::question(this, "输入错误", "分母不能为0，请重新输入，是否退出？", QMessageBox::Yes | QMessageBox::No);
+                            if (reply == QMessageBox::Yes) {
+                                return; // 用户选择退出
+                            } else {
+                                j--; // 重新输入当前元素
+                                continue; // 跳过当前循环，等待用户重新输入
+                            }
                         }
 
-                        matrix[i][j] = Entry(numerator, denominator);
+                        matrix.setEntry(i, j, Entry(numerator, denominator)); // 使用 setEntry 方法设置矩阵元素
                     } else {
                         // 只输入一个数，视为整数
                         bool integerOk;
                         long long numerator = input.toLongLong(&integerOk);
                         if (!integerOk) {
-                            QMessageBox::warning(this, "输入错误", "请输入有效的整数。", QMessageBox::Ok);
-                            j--; // 重新输入当前元素
-                            continue; // 跳过当前循环，等待用户重新输入
+                            QMessageBox::StandardButton reply;
+                            reply = QMessageBox::question(this, "输入错误", "请输入有效的整数，请重新输入，是否退出？", QMessageBox::Yes | QMessageBox::No);
+                            if (reply == QMessageBox::Yes) {
+                                return; // 用户选择退出
+                            } else {
+                                j--; // 重新输入当前元素
+                                continue; // 跳过当前循环，等待用户重新输入
+                            }
                         }
-                        long long denominator = 1; // 分母设为1
-                        matrix[i][j] = Entry(numerator, denominator);
+                        matrix.setEntry(i, j, Entry(numerator, 1)); // 分母设为1
                     }
+
+                    // 每次输入后更新 BoardWidget
+                    boardWidget_->setMatrix(matrix); // 更新 BoardWidget 显示矩阵
                 } else {
                     // 弹出对话框询问用户是否退出
                     QMessageBox::StandardButton reply;
