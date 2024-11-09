@@ -8,10 +8,20 @@
 #include <iostream>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
+    auto centralWidget = new QWidget(this);
+    auto mainLayout = new QHBoxLayout(centralWidget); // 使用水平布局
+    operationWidget_ = std::make_shared<OperationWidget>(this);
+    //boardWidget_ = std::make_shared<BoardWidget>(3, 3, this); // 创建 3x3 的棋盘
+    //mainLayout->addWidget(boardWidget_.get()); 
+    mainLayout->addWidget(operationWidget_.get()); 
+    setCentralWidget(centralWidget);
     setupUi();
     setWindowTitle("矩 阵 计 算 器"); // 设置窗口标题
 
     // 连接 OperationWidget 的信号到 MainWindow 的槽
+
+    connect(operationWidget_.get(), &OperationWidget::startRequested, this, &MainWindow::handleStart);
+    connect(operationWidget_.get(), &OperationWidget::backRequested, this, &MainWindow::handleBack);
     connect(operationWidget_.get(), &OperationWidget::iostreamInputMatrixRequested, this, &MainWindow::handleIostreamInputMatrix);
     connect(operationWidget_.get(), &OperationWidget::fileInputMatrixRequested, this, &MainWindow::handleFileInputMatrix);
     connect(operationWidget_.get(), &OperationWidget::luDecompositionRequested, this, &MainWindow::handleLuDecomposition);
@@ -20,27 +30,27 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     connect(operationWidget_.get(), &OperationWidget::qrDecompositionRequested, this, &MainWindow::handleQrDecomposition);
     connect(operationWidget_.get(), &OperationWidget::svdDecompositionRequested, this, &MainWindow::handleSvdDecomposition);
     connect(operationWidget_.get(), &OperationWidget::jordanFormRequested, this, &MainWindow::handleJordanForm);
+    connect(operationWidget_.get(), &OperationWidget::backRequested, this, &MainWindow::handleBack);
+    connect(operationWidget_.get(), &OperationWidget::boxInputMatrixRequested, this, &MainWindow::handleBoxInputMatrix);    
+
+}
+
+void MainWindow::handleStart(){
+    operationWidget_->hideStartButton();
+    operationWidget_->showInputButtons();
+    operationWidget_->hideFunctionButtons();
 }
 
 void MainWindow::setupUi(){
-    auto centralWidget = new QWidget(this);
-    auto mainLayout = new QHBoxLayout(centralWidget); // 使用水平布局
-    operationWidget_ = std::make_shared<OperationWidget>(this);
-    //boardWidget_ = std::make_shared<BoardWidget>(3, 3, this); // 创建 3x3 的棋盘
-    //mainLayout->addWidget(boardWidget_.get()); 
-    mainLayout->addWidget(operationWidget_.get()); 
+
     operationWidget_->hideFunctionButtons();
     operationWidget_->hideInputButtons();
-    setCentralWidget(centralWidget);
+
+    operationWidget_->hideBackButton();
 
     // 连接 back 按钮的信号
-    connect(operationWidget_->back_.get(), &QPushButton::clicked, this, &MainWindow::handleBack);
 }
-//void MainWindow::startHandle(){
-    //operationWidget_->hideFunctionButtons();
-    //operationWidget_->hideInputButtons();
 
-//}
 // 槽函数实现
 void MainWindow::handleLuDecomposition() {
 
@@ -70,6 +80,7 @@ void MainWindow::handleJordanForm() {
 
 // 实现 handleBack 槽函数
 void MainWindow::handleBack() {
+    operationWidget_->showStartButton();
     setupUi();
 
 
@@ -82,7 +93,8 @@ void MainWindow::handleFileInputMatrix() {
 
 
 }
-void MainWindow::handleIostreamInputMatrix() {
+void MainWindow::handleBoxInputMatrix() {
+    operationWidget_->hideStartButton();
     // 使用 QInputDialog 获取矩阵的大小
     bool ok;
     QString sizeInput = QInputDialog::getText(this, "输入矩阵大小", "请输入矩阵的行数和列数（用空格分隔）:", QLineEdit::Normal, "", &ok);
@@ -95,6 +107,7 @@ void MainWindow::handleIostreamInputMatrix() {
 
         if (!rowsOk || !colsOk || rows <= 0 || cols <= 0) {
             QMessageBox::warning(this, "输入错误", "请输入有效的行数和列数（必须为正整数）", QMessageBox::Ok);
+            handleBack();
             return; // 退出函数，等待用户重新输入
         }
 
@@ -123,7 +136,7 @@ void MainWindow::handleIostreamInputMatrix() {
                         QStringList parts = input.split("/");
                         if (parts.size() != 2) {
                             QMessageBox::warning(this, "输入错误", "分数格式不正确，请输入如 'a/b' 的格式。", QMessageBox::Ok);
-
+                            j--;
                             continue; // 跳过当前循环，等待用户重新输入
                         }
 
@@ -133,7 +146,7 @@ void MainWindow::handleIostreamInputMatrix() {
 
                         if (!numeratorOk || !denominatorOk || denominator == 0) {
                             QMessageBox::warning(this, "输入错误", "分母不能为0，请重新输入。", QMessageBox::Ok);
-
+                            j--;
                             continue; // 跳过当前循环，等待用户重新输入
                         }
 
@@ -144,6 +157,7 @@ void MainWindow::handleIostreamInputMatrix() {
                         long long numerator = input.toLongLong(&integerOk);
                         if (!integerOk) {
                             QMessageBox::warning(this, "输入错误", "请输入有效的整数。", QMessageBox::Ok);
+                            j--;
                             continue; // 跳过当前循环，等待用户重新输入
                         }
 
@@ -156,11 +170,16 @@ void MainWindow::handleIostreamInputMatrix() {
                     QMessageBox::StandardButton reply;
                     reply = QMessageBox::question(this, "输入流", "读取输入矩阵信息失败，是否退出？", QMessageBox::Yes | QMessageBox::No);
                     if (reply == QMessageBox::Yes) {
+
+                        boardWidget_ = nullptr; // 将指针设置为 nullptr，避免悬空指针
+                        handleBack();
                         return; // 用户选择退出
                     } else {
+                        j--;
                         continue; // 重新输入当前元素
                     }
                 }
+
             }
         }
 
@@ -168,4 +187,11 @@ void MainWindow::handleIostreamInputMatrix() {
         operationWidget_->hideInputButtons();
         operationWidget_->showFunctionButtons();
     }
+    else{
+        handleBack();
+        return;
+    }
+}
+void MainWindow::handleIostreamInputMatrix() {
+    // 执行输入流输入矩阵的逻辑
 }

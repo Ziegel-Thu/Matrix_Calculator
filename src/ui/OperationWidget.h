@@ -21,10 +21,15 @@ public:
     std::shared_ptr<QPushButton> jordanFormButton_;
     std::shared_ptr<QPushButton> iostreamInputButton_;
     std::shared_ptr<QPushButton> fileInputButton_;
+    std::shared_ptr<QPushButton> boxInputButton_;
     void showFunctionButtons();
     void hideFunctionButtons();
     void showInputButtons();
     void hideInputButtons();
+    void hideStartButton();
+    void showStartButton();
+    void hideBackButton();
+    void showBackButton();
 
 signals:
     //void startRequested();
@@ -35,7 +40,10 @@ signals:
     void svdDecompositionRequested();
     void jordanFormRequested();
     void fileInputMatrixRequested();
+    void startRequested();
     void iostreamInputMatrixRequested();
+    void boxInputMatrixRequested();
+    void backRequested();
 
 
 private:

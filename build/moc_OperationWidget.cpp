@@ -45,7 +45,9 @@ constexpr auto qt_meta_stringdata_CLASSOperationWidgetENDCLASS = QtMocHelpers::s
     "svdDecompositionRequested",
     "jordanFormRequested",
     "fileInputMatrixRequested",
-    "iostreamInputMatrixRequested"
+    "startRequested",
+    "iostreamInputMatrixRequested",
+    "backRequested"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -58,24 +60,28 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSOperationWidgetENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-       8,   14, // methods
+      10,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       8,       // signalCount
+      10,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,   62,    2, 0x06,    1 /* Public */,
-       3,    0,   63,    2, 0x06,    2 /* Public */,
-       4,    0,   64,    2, 0x06,    3 /* Public */,
-       5,    0,   65,    2, 0x06,    4 /* Public */,
-       6,    0,   66,    2, 0x06,    5 /* Public */,
-       7,    0,   67,    2, 0x06,    6 /* Public */,
-       8,    0,   68,    2, 0x06,    7 /* Public */,
-       9,    0,   69,    2, 0x06,    8 /* Public */,
+       1,    0,   74,    2, 0x06,    1 /* Public */,
+       3,    0,   75,    2, 0x06,    2 /* Public */,
+       4,    0,   76,    2, 0x06,    3 /* Public */,
+       5,    0,   77,    2, 0x06,    4 /* Public */,
+       6,    0,   78,    2, 0x06,    5 /* Public */,
+       7,    0,   79,    2, 0x06,    6 /* Public */,
+       8,    0,   80,    2, 0x06,    7 /* Public */,
+       9,    0,   81,    2, 0x06,    8 /* Public */,
+      10,    0,   82,    2, 0x06,    9 /* Public */,
+      11,    0,   83,    2, 0x06,   10 /* Public */,
 
  // signals: parameters
+    QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -111,7 +117,11 @@ Q_CONSTINIT const QMetaObject OperationWidget::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'fileInputMatrixRequested'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'startRequested'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'iostreamInputMatrixRequested'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'backRequested'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -130,7 +140,9 @@ void OperationWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         case 4: _t->svdDecompositionRequested(); break;
         case 5: _t->jordanFormRequested(); break;
         case 6: _t->fileInputMatrixRequested(); break;
-        case 7: _t->iostreamInputMatrixRequested(); break;
+        case 7: _t->startRequested(); break;
+        case 8: _t->iostreamInputMatrixRequested(); break;
+        case 9: _t->backRequested(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -186,8 +198,22 @@ void OperationWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         }
         {
             using _t = void (OperationWidget::*)();
-            if (_t _q_method = &OperationWidget::iostreamInputMatrixRequested; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+            if (_t _q_method = &OperationWidget::startRequested; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
                 *result = 7;
+                return;
+            }
+        }
+        {
+            using _t = void (OperationWidget::*)();
+            if (_t _q_method = &OperationWidget::iostreamInputMatrixRequested; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+                *result = 8;
+                return;
+            }
+        }
+        {
+            using _t = void (OperationWidget::*)();
+            if (_t _q_method = &OperationWidget::backRequested; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+                *result = 9;
                 return;
             }
         }
@@ -214,13 +240,13 @@ int OperationWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 8)
+        if (_id < 10)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 8;
+        _id -= 10;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 8)
+        if (_id < 10)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 8;
+        _id -= 10;
     }
     return _id;
 }
@@ -268,8 +294,20 @@ void OperationWidget::fileInputMatrixRequested()
 }
 
 // SIGNAL 7
-void OperationWidget::iostreamInputMatrixRequested()
+void OperationWidget::startRequested()
 {
     QMetaObject::activate(this, &staticMetaObject, 7, nullptr);
+}
+
+// SIGNAL 8
+void OperationWidget::iostreamInputMatrixRequested()
+{
+    QMetaObject::activate(this, &staticMetaObject, 8, nullptr);
+}
+
+// SIGNAL 9
+void OperationWidget::backRequested()
+{
+    QMetaObject::activate(this, &staticMetaObject, 9, nullptr);
 }
 QT_WARNING_POP
