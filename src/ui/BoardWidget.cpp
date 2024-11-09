@@ -36,3 +36,5 @@ void BoardWidget::setMatrix(const Matrix& matrix) {
         }
     }
 }
+
+

@@ -27,6 +27,7 @@ private slots:
     void handleJordanForm();
     void handleBack();
     void handleFileInputMatrix();
+    void handleBoxInputMatrix();
     void handleIostreamInputMatrix();
-
+    void handleStart();
 };

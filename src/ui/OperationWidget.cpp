@@ -10,7 +10,7 @@ OperationWidget::OperationWidget(QWidget *parent) : QWidget(parent) {
     
     auto mainBox_ = new QGroupBox(this);
     auto mainLayout = new QVBoxLayout(mainBox_);
-    mainBox_->setFixedSize(150, 150);
+    mainBox_->setFixedSize(150, 100);
     
     auto modeBox_ = new QGroupBox(this);
     auto modeLayout = new QVBoxLayout(modeBox_);
@@ -30,6 +30,7 @@ OperationWidget::OperationWidget(QWidget *parent) : QWidget(parent) {
     inputBox_->setFixedSize(150, 100);
     iostreamInputButton_ = std::make_shared<QPushButton>("输入流输入", this);
     fileInputButton_ = std::make_shared<QPushButton>("文件输入", this);
+    boxInputButton_ = std::make_shared<QPushButton>("输入框输入", this);
     
 
     inputLayout->addWidget(iostreamInputButton_.get());
@@ -58,7 +59,7 @@ OperationWidget::OperationWidget(QWidget *parent) : QWidget(parent) {
 
 
 
-    connect(startButton_.get(), &QPushButton::clicked, this, &OperationWidget::showInputButtons);
+    connect(startButton_.get(), &QPushButton::clicked, this, &OperationWidget::startRequested);
     connect(iostreamInputButton_.get(),&QPushButton::clicked,this,&OperationWidget::iostreamInputMatrixRequested);
     connect(fileInputButton_.get(),&QPushButton::clicked,this,&OperationWidget::fileInputMatrixRequested);
     connect(luDecompositionButton_.get(), &QPushButton::clicked, this, &OperationWidget::luDecompositionRequested);
@@ -67,6 +68,8 @@ OperationWidget::OperationWidget(QWidget *parent) : QWidget(parent) {
     connect(qrDecompositionButton_.get(), &QPushButton::clicked, this, &OperationWidget::qrDecompositionRequested);
     connect(svdDecompositionButton_.get(), &QPushButton::clicked, this, &OperationWidget::svdDecompositionRequested);
     connect(jordanFormButton_.get(), &QPushButton::clicked, this, &OperationWidget::jordanFormRequested);
+    connect(back_.get(), &QPushButton::clicked, this, &OperationWidget::backRequested);
+    connect(boxInputButton_.get(), &QPushButton::clicked, this, &OperationWidget::boxInputMatrixRequested);
 }
 
 void OperationWidget::showFunctionButtons() {
@@ -88,9 +91,23 @@ void OperationWidget::hideFunctionButtons() {
 void OperationWidget::showInputButtons(){
     iostreamInputButton_->show();
     fileInputButton_->show();
+    boxInputButton_->show();
 }
 void OperationWidget::hideInputButtons(){
 
     iostreamInputButton_->hide();
     fileInputButton_->hide();
+    boxInputButton_->hide();
+}
+void OperationWidget::hideStartButton(){
+    startButton_->hide();
+}
+void OperationWidget::showStartButton(){
+    startButton_->show();
+}
+void OperationWidget::hideBackButton(){
+    back_->hide();
+}
+void OperationWidget::showBackButton(){
+    back_->show();
 }
