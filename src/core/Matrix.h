@@ -22,6 +22,9 @@ public:
     // 整体约分操作
     void reduceAll();
 
+    // PLU 分解
+    std::tuple<Matrix, Matrix, Matrix> pluDecomposition() const;
+
     bool hasValue(int row, int col) const;
 
 private:

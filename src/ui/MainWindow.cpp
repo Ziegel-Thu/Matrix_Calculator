@@ -6,6 +6,13 @@
 #include <QInputDialog>
 #include <QLineEdit>
 #include <iostream>
+#include <QApplication>
+#include <unistd.h>
+#include <string>
+#include <sstream>
+#include <limits>
+#include <thread>
+#include <chrono>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     auto centralWidget = new QWidget(this);
@@ -46,15 +53,50 @@ void MainWindow::setupUi(){
     operationWidget_->hideFunctionButtons();
     operationWidget_->hideInputButtons();
 
-    operationWidget_->hideBackButton();
-
     // 连接 back 按钮的信号
 }
 
 // 槽函数实现
 void MainWindow::handleLuDecomposition() {
-
+    operationWidget_->hideFunctionButtons();
     
+    // 使用用户输入的矩阵进行 PLU 分解
+    auto [P, L, U] = matrix_->pluDecomposition(); // 调用 PLU 分解
+
+    // 获取 centralWidget 的现有布局
+    auto centralWidget = this->centralWidget();
+    auto layout = qobject_cast<QHBoxLayout*>(centralWidget->layout());
+    if (!layout) {
+        layout = new QHBoxLayout(centralWidget);
+        centralWidget->setLayout(layout);
+    }
+
+    QApplication::processEvents(); // 更新界面
+
+
+    // 显示 P 矩阵
+    auto pWidget = std::make_shared<BoardWidget>(P.getRows(), P.getCols(), this);
+    pWidget->setMatrix(P);
+    layout->addWidget(pWidget.get());
+    QApplication::processEvents(); // 更新界面
+
+
+
+
+    // 显示 L 矩阵
+    auto lWidget = std::make_shared<BoardWidget>(L.getRows(), L.getCols(), this);
+    lWidget->setMatrix(L);
+    layout->addWidget(lWidget.get());
+    QApplication::processEvents(); // 更新界面
+
+
+    // 显示 U 矩阵
+    auto uWidget = std::make_shared<BoardWidget>(U.getRows(), U.getCols(), this);
+    uWidget->setMatrix(U);
+    layout->addWidget(uWidget.get());
+    QApplication::processEvents(); // 更新界面
+
+
 }
 
 void MainWindow::handleInverse() {
@@ -116,9 +158,10 @@ void MainWindow::handleBoxInputMatrix() {
         auto centralWidget = this->centralWidget();
         auto mainLayout = centralWidget->layout();
         mainLayout->addWidget(boardWidget_.get()); // 将 boardWidget 添加到布局中
-
-        // 创建一个 Matrix 实例
-        Matrix matrix(rows, cols); // 使用原构造函数创建 Matrix 实例
+        QApplication::processEvents(); // 处理事件，更新界面
+        
+        // 使用 make_shared 创建 Matrix 实例
+        matrix_ = std::make_shared<Matrix>(rows, cols);
 
         for (int i = 0; i < rows; ++i) {
             for (int j = 0; j < cols; ++j) {
@@ -150,7 +193,7 @@ void MainWindow::handleBoxInputMatrix() {
                             continue; // 跳过当前循环，等待用户重新输入
                         }
 
-                        matrix.setEntry(i, j, Entry(numerator, denominator)); // 使用 setEntry 方法设置矩阵元素
+                        matrix_->setEntry(i, j, Entry(numerator, denominator)); // 使用 setEntry 方法设置矩阵元素
                     } else {
                         // 只输入一个数，视为整数
                         bool integerOk;
@@ -161,16 +204,15 @@ void MainWindow::handleBoxInputMatrix() {
                             continue; // 跳过当前循环，等待用户重新输入
                         }
 
-                        matrix.setEntry(i, j, Entry(numerator, 1)); // 分母设为1
+                        matrix_->setEntry(i, j, Entry(numerator, 1)); // 分母设为1
                     }
                     // 每次输入后更新 BoardWidget
-                    boardWidget_->setMatrix(matrix); // 更新 BoardWidget 显示矩阵
+                    boardWidget_->setMatrix(*matrix_); // 更新 BoardWidget 显示矩阵
                 } else {
                     // 弹出对话框询问用户是否退出
                     QMessageBox::StandardButton reply;
                     reply = QMessageBox::question(this, "输入流", "读取输入矩阵信息失败，是否退出？", QMessageBox::Yes | QMessageBox::No);
                     if (reply == QMessageBox::Yes) {
-
                         boardWidget_ = nullptr; // 将指针设置为 nullptr，避免悬空指针
                         handleBack();
                         return; // 用户选择退出
@@ -179,7 +221,6 @@ void MainWindow::handleBoxInputMatrix() {
                         continue; // 重新输入当前元素
                     }
                 }
-
             }
         }
 
@@ -193,5 +234,123 @@ void MainWindow::handleBoxInputMatrix() {
     }
 }
 void MainWindow::handleIostreamInputMatrix() {
-    // 执行输入流输入矩阵的逻辑
+    operationWidget_->hideStartButton();
+
+    std::string input;
+    int rows, cols;
+
+    while (true) {
+        std::cout << "请输入矩阵的行数和列数（用空格分隔）: ";
+        std::getline(std::cin, input); // 读取整行输入
+
+        std::istringstream iss(input);
+        if (iss >> rows >> cols) { // 尝试将输入转换为整数
+            if (rows > 0 && cols > 0) {
+                break; // 输入有效，退出循环
+            }
+        }
+
+        std::cout << "输入错误: 请输入有效的行数和列数（必须为正整数）" << std::endl;
+        std::cout << "输入 1 退出，输入 2 重试: ";
+        int choice;
+        std::getline(std::cin, input); // 读取用户选择
+        std::istringstream choiceStream(input);
+        if (choiceStream >> choice) {
+            if (choice == 1) {
+                handleBack();
+                return; // 退出函数
+            } else if (choice != 2) {
+                std::cout << "无效输入，请重新输入。" << std::endl;
+            }
+        } else {
+            std::cout << "无效输入，请重新输入。" << std::endl;
+        }
+    }
+
+    // 创建 BoardWidget 并添加到布局
+
+    boardWidget_ = std::make_shared<BoardWidget>(rows, cols, this);
+    auto centralWidget = this->centralWidget();
+    auto mainLayout = centralWidget->layout();
+    mainLayout->addWidget(boardWidget_.get()); // 将 boardWidget 添加到布局中
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));    
+    QApplication::processEvents(); // 处理事件，更新界面
+    QApplication::processEvents(); // 处理事件，更新界面
+
+    // 创建一个 Matrix 实例
+    Matrix matrix(rows, cols); // 使用原构造函数创建 Matrix 实例
+
+
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+                while (true)
+                {
+                
+                std::cout << QString("请输入第 %1 行第 %2 列的元素:").arg(i + 1).arg(j + 1).toStdString();
+                std::string input;
+                std::cin >> input;
+                std::cout<<std::endl;
+                if (input.empty()) {
+                    std::cout << "输入错误: 输入不能为空，请重新输入。" << std::endl;
+                    j--;
+                    continue; // 跳过当前环，等待用户重新输入
+                }
+                
+                
+
+                // 检查输入是否为分数
+                if (input.find("/") != std::string::npos) {
+                    QStringList parts = QString::fromStdString(input).split("/");
+                    if (parts.size() != 2) {
+                        std::cout << "输入错误: 分数格式不正确，请输入如 'a/b' 的格式。" << std::endl;
+                    } else {
+                        bool numeratorOk, denominatorOk;
+                        long long numerator = parts[0].toLongLong(&numeratorOk);
+                        long long denominator = parts[1].toLongLong(&denominatorOk);
+
+                        if (numeratorOk && denominatorOk && denominator != 0) {
+                            matrix.setEntry(i, j, Entry(numerator, denominator)); // 使用 setEntry 方法设置矩阵元素
+                            boardWidget_->setMatrix(matrix); // 更新 BoardWidget 显示矩阵
+                            QApplication::processEvents(); // 处理事件，更新界面
+                            break; // 输入有效，退出循环
+                        } else {
+                            std::cout << "输入错误: 分母不能为0，请重新输入。" << std::endl;
+                        }
+                    }
+                } else {
+                    // 只输入一个数，视为整数
+                    bool integerOk;
+                    long long numerator = QString::fromStdString(input).toLongLong(&integerOk);
+                    if (integerOk) {
+                        matrix.setEntry(i, j, Entry(numerator, 1)); // 分母设为1
+                        boardWidget_->setMatrix(matrix); // 更新 BoardWidget 显示矩阵
+                        QApplication::processEvents(); // 处理事件，更新界面
+                        break; // 输入有效，退出循环
+                    } else {
+                        std::cout << "输入错误: 请输入有效的整数。" << std::endl;
+                        
+                    }
+                
+
+
+            }
+                std::cout << "输入 1 退出，输入 2 重试: ";
+                int choice;
+                std::cin >> choice;
+
+                std::cout<<std::endl;
+                if (choice == 1) {
+                    
+                    handleBack();
+                    return; // 退出函数
+                } else if (choice != 2) {
+                    std::cout << "无效输入，请重新输入。" << std::endl;
+                }
+            }
+        }
+    }
+
+    std::cout << "读取输入矩阵信息完毕" << std::endl;
+    operationWidget_->hideInputButtons();
+    operationWidget_->showFunctionButtons();
 }

@@ -1,6 +1,10 @@
 #include "Matrix.h"
 
 #include <iostream>
+#include <stdexcept>
+#include <vector>
+#include <algorithm>
+
 Matrix::Matrix(int rows, int cols) : rows_(rows), cols_(cols) {
     data_.resize(rows, std::vector<Entry>(cols, Entry(0, 1))); // 初始化矩阵，默认值为 0/1
 
@@ -46,5 +50,60 @@ void Matrix::reduceAll() {
             } // 对每个元素进行约分
         }
     }
+}
+
+std::tuple<Matrix, Matrix, Matrix> Matrix::pluDecomposition() const {
+    if (rows_ != cols_) {
+        throw std::invalid_argument("PLU decomposition requires a square matrix");
+    }
+
+    int n = rows_;
+    Matrix L(n, n);
+    Matrix U(*this); // 复制当前矩阵到 U
+    Matrix P(n, n);
+
+    // 初始化 P 为单位矩阵
+    for (int i = 0; i < n; ++i) {
+        P.setEntry(i, i, Entry(1, 1));
+    }
+
+    for (int i = 0; i < n; ++i) {
+        // 寻找主元
+        int maxRow = i;
+        for (int k = i + 1; k < n; ++k) {
+            if (std::abs(U.getEntry(k, i).getNumerator()) > std::abs(U.getEntry(maxRow, i).getNumerator())) {
+                maxRow = k;
+            }
+        }
+
+        // 交换行
+        if (i != maxRow) {
+            for (int k = 0; k < n; ++k) {
+                std::swap(U.data_[i][k], U.data_[maxRow][k]);
+                std::swap(P.data_[i][k], P.data_[maxRow][k]);
+            }
+        }
+
+        // 检查主元是否为零
+        if (U.getEntry(i, i).getNumerator() == 0) {
+            throw std::runtime_error("Matrix is singular and cannot be decomposed");
+        }
+
+        // 计算 L 和 U
+        for (int j = i + 1; j < n; ++j) {
+            Entry factor = U.getEntry(j, i).operator/( U.getEntry(i, i));
+            L.setEntry(j, i, factor);
+            for (int k = i; k < n; ++k) {
+                U.setEntry(j, k, U.getEntry(j, k).operator-( factor.operator*(  U.getEntry(i, k))));
+            }
+        }
+    }
+
+    // 设置 L 的对角线为 1
+    for (int i = 0; i < n; ++i) {
+        L.setEntry(i, i, Entry(1, 1));
+    }
+
+    return {P, L, U}; // 返回 P, L, U 矩阵
 }
 
