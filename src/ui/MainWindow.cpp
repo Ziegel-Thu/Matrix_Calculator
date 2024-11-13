@@ -59,7 +59,11 @@ void MainWindow::setupUi(){
 // 槽函数实现
 void MainWindow::handleLuDecomposition() {
     operationWidget_->hideFunctionButtons();
-    
+    if(matrix_ == nullptr){
+        QMessageBox::warning(this, "输入错误", "请先输入矩阵", QMessageBox::Ok);
+        handleBack();
+        return;
+    }
     // 使用用户输入的矩阵进行 PLU 分解
     auto [P, L, U] = matrix_->pluDecomposition(); // 调用 PLU 分解
 
@@ -100,12 +104,84 @@ void MainWindow::handleLuDecomposition() {
 }
 
 void MainWindow::handleInverse() {
-    // 执行求逆的逻辑
-    
+    if(matrix_ == nullptr){
+        QMessageBox::warning(this, "输入错误", "请先输入矩阵", QMessageBox::Ok);
+        handleBack();
+        return;
+    }
+    if(matrix_->getRows() != matrix_->getCols()){
+        QMessageBox::warning(this, "输入错误", "请输入方阵", QMessageBox::Ok);
+        handleBack();
+        return;
+    }
+    if(matrix_->getDeterminant() == Entry(0, 1)){
+        QMessageBox::warning(this, "输入错误", "请输入非奇异矩阵", QMessageBox::Ok);
+        handleBack();
+        return;
+    }
+
+    Matrix inv = matrix_->inverse();
+    invWidget_ = std::make_shared<BoardWidget>(inv.getRows(), inv.getCols(), this);
+    invWidget_->setMatrix(inv);
+
+    // 获取 centralWidget 的现有布局
+    auto centralWidget = this->centralWidget();
+    auto layout = qobject_cast<QHBoxLayout*>(centralWidget->layout());
+    if (!layout) {
+        layout = new QHBoxLayout(centralWidget);
+        centralWidget->setLayout(layout);
+    }
+
+    layout->addWidget(invWidget_.get());
+
+    QLabel* equalsLabel = new QLabel("=", this);
+    equalsLabel->setAlignment(Qt::AlignCenter);
+    equalsLabel->setFixedSize(20, 50);
+    layout->addWidget(equalsLabel);
+
+    Matrix IdMatrix(matrix_->getRows(), matrix_->getCols());
+    IdMatrix.identity(); // 确保 IdMatrix 是单位矩阵
+
+    auto IdWidget_ = std::make_shared<BoardWidget>(IdMatrix.getRows(), IdMatrix.getCols(), this);
+    IdWidget_->setMatrix(IdMatrix);
+        layout->addWidget(equalsLabel);
+
+    layout->addWidget(IdWidget_.get());
+
+    QApplication::processEvents(); // 更新界面
+
 }
 
 void MainWindow::handleDeterminant() {
+    if(matrix_ == nullptr){
+        QMessageBox::warning(this, "输入错误", "请先输入矩阵", QMessageBox::Ok);
+        handleBack();
+        return;
+    }
+    if(matrix_->getRows() != matrix_->getCols()){
+        QMessageBox::warning(this, "输入错误", "请输入方阵", QMessageBox::Ok);
+        handleBack();
+        return;
+    }
+    Entry det = matrix_->getDeterminant();
+    Matrix detMatrix(1, 1);
+    detMatrix.setEntry(0, 0, det);
+    auto centralWidget = this->centralWidget();
+    auto layout = qobject_cast<QHBoxLayout*>(centralWidget->layout());
+    if (!layout) {
+        layout = new QHBoxLayout(centralWidget);
+        centralWidget->setLayout(layout);
+    }
+    QLabel* equalsLabel = new QLabel("=", this);
+    equalsLabel->setAlignment(Qt::AlignCenter);
+    equalsLabel->setFixedSize(20, 50); // 设置等号的大小
+    detWidget_ = std::make_shared<BoardWidget>(1, 1, this);
+    detWidget_->setMatrix(detMatrix);
+    layout->addWidget(equalsLabel);
+    layout->addWidget(detWidget_.get());
+    QApplication::processEvents(); // 更新界面
     // 计算行列式的逻辑
+    
 }
 
 void MainWindow::handleQrDecomposition() {
@@ -318,7 +394,7 @@ void MainWindow::handleIostreamInputMatrix() {
                         }
                     }
                 } else {
-                    // 只输入一��数，视为整数
+                    // 只输入一数，视为整数
                     bool integerOk;
                     long long numerator = QString::fromStdString(input).toLongLong(&integerOk);
                     if (integerOk) {

@@ -16,9 +16,12 @@ private:
     std::shared_ptr<OperationWidget> operationWidget_;
     std::shared_ptr<BoardWidget> boardWidget_;
     std::shared_ptr<Matrix> matrix_; // 添加这一行声明 matrix_
+    std::shared_ptr<BoardWidget> detWidget_;
     std::shared_ptr<BoardWidget> pWidget_;
     std::shared_ptr<BoardWidget> lWidget_;
     std::shared_ptr<BoardWidget> uWidget_;
+    std::shared_ptr<BoardWidget> invWidget_;
+    std::shared_ptr<BoardWidget> IdWidget_;
 
     QHBoxLayout *sideLayout;
 
