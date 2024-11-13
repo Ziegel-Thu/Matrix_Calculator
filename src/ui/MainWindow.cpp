@@ -73,30 +73,30 @@ void MainWindow::handleLuDecomposition() {
 
     QApplication::processEvents(); // 更新界面
 
-
     // 显示 P 矩阵
-    auto pWidget = std::make_shared<BoardWidget>(P.getRows(), P.getCols(), this);
-    pWidget->setMatrix(P);
-    layout->addWidget(pWidget.get());
+    pWidget_ = std::make_shared<BoardWidget>(P.getRows(), P.getCols(), this);
+    pWidget_->setMatrix(P);
+
+    // 创建一个 QLabel 显示等号
+    QLabel* equalsLabel = new QLabel("=", this);
+    equalsLabel->setAlignment(Qt::AlignCenter);
+    equalsLabel->setFixedSize(20, 50); // 设置等号的大小
+
+    layout->addWidget(equalsLabel); // 添加等号到布局
+    layout->addWidget(pWidget_.get()); // 添加 P 矩阵到布局
     QApplication::processEvents(); // 更新界面
-
-
-
 
     // 显示 L 矩阵
-    auto lWidget = std::make_shared<BoardWidget>(L.getRows(), L.getCols(), this);
-    lWidget->setMatrix(L);
-    layout->addWidget(lWidget.get());
+    lWidget_ = std::make_shared<BoardWidget>(L.getRows(), L.getCols(), this);
+    lWidget_->setMatrix(L);
+    layout->addWidget(lWidget_.get());
     QApplication::processEvents(); // 更新界面
-
 
     // 显示 U 矩阵
-    auto uWidget = std::make_shared<BoardWidget>(U.getRows(), U.getCols(), this);
-    uWidget->setMatrix(U);
-    layout->addWidget(uWidget.get());
+    uWidget_ = std::make_shared<BoardWidget>(U.getRows(), U.getCols(), this);
+    uWidget_->setMatrix(U);
+    layout->addWidget(uWidget_.get());
     QApplication::processEvents(); // 更新界面
-
-
 }
 
 void MainWindow::handleInverse() {
@@ -153,7 +153,7 @@ void MainWindow::handleBoxInputMatrix() {
             return; // 退出函数，等待用户重新输入
         }
 
-        // 创建 BoardWidget 并添加到布局
+        // 建 BoardWidget 并添加到布局
         boardWidget_ = std::make_shared<BoardWidget>(rows, cols, this);
         auto centralWidget = this->centralWidget();
         auto mainLayout = centralWidget->layout();
@@ -318,7 +318,7 @@ void MainWindow::handleIostreamInputMatrix() {
                         }
                     }
                 } else {
-                    // 只输入一个数，视为整数
+                    // 只输入一��数，视为整数
                     bool integerOk;
                     long long numerator = QString::fromStdString(input).toLongLong(&integerOk);
                     if (integerOk) {

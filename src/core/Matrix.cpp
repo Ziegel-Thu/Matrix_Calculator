@@ -64,7 +64,13 @@ std::tuple<Matrix, Matrix, Matrix> Matrix::pluDecomposition() const {
 
     // 初始化 P 为单位矩阵
     for (int i = 0; i < n; ++i) {
-        P.setEntry(i, i, Entry(1, 1));
+        for (int j = 0; j < n; ++j) {
+            if (i == j) {
+                P.setEntry(i, j, Entry(1, 1)); // 对角线元素为 1
+            } else {
+                P.setEntry(i, j, Entry(0, 1)); // 非对角线元素为 0
+            }
+        }
     }
 
     for (int i = 0; i < n; ++i) {
