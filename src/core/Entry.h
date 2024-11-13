@@ -14,6 +14,9 @@ public:
     Entry operator-(const Entry& other) const;
     Entry operator*(const Entry& other) const;
     Entry operator/(const Entry& other) const;
+    Entry operator-() const;
+    bool operator==(const Entry& other) const;
+    bool operator!=(const Entry& other) const;
 
 
     // 约分方法

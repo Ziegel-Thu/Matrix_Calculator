@@ -75,6 +75,18 @@ Entry Entry::operator*(const Entry& other) const {
     return Entry(numerator, denominator);
 }
 
+Entry Entry::operator-() const {
+    return Entry(-fraction_.first, fraction_.second);
+}
+
+bool Entry::operator==(const Entry& other) const {
+    return fraction_.first == other.fraction_.first && fraction_.second == other.fraction_.second;
+}
+
+bool Entry::operator!=(const Entry& other) const {
+    return !(this->operator==(other));
+}
+
 Entry Entry::operator/(const Entry& other) const {
     if (other.fraction_.first == 0) {
         throw std::invalid_argument("Cannot divide by zero");

@@ -21,11 +21,14 @@ public:
 
     // 整体约分操作
     void reduceAll();
+    void identity();
 
     // PLU 分解
     std::tuple<Matrix, Matrix, Matrix> pluDecomposition() const;
-
+    Entry getDeterminant() const;
+    Matrix inverse() const;
     bool hasValue(int row, int col) const;
+    
 
 private:
     int rows_; // 行数

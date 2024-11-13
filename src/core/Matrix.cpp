@@ -51,7 +51,13 @@ void Matrix::reduceAll() {
         }
     }
 }
-
+void Matrix::identity(){
+    for (int i = 0; i < rows_; ++i) {
+        for (int j = 0; j < cols_; ++j) {
+            data_[i][j] = Entry(i == j, 1);
+        }
+    }
+}
 std::tuple<Matrix, Matrix, Matrix> Matrix::pluDecomposition() const {
     if (rows_ != cols_) {
         throw std::invalid_argument("PLU decomposition requires a square matrix");
@@ -63,15 +69,7 @@ std::tuple<Matrix, Matrix, Matrix> Matrix::pluDecomposition() const {
     Matrix P(n, n);
 
     // 初始化 P 为单位矩阵
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-            if (i == j) {
-                P.setEntry(i, j, Entry(1, 1)); // 对角线元素为 1
-            } else {
-                P.setEntry(i, j, Entry(0, 1)); // 非对角线元素为 0
-            }
-        }
-    }
+    P.identity();
 
     for (int i = 0; i < n; ++i) {
         // 寻找主元
@@ -113,3 +111,84 @@ std::tuple<Matrix, Matrix, Matrix> Matrix::pluDecomposition() const {
     return {P, L, U}; // 返回 P, L, U 矩阵
 }
 
+Entry Matrix::getDeterminant() const {
+
+    // 基础情况：1x1 矩阵
+    if (rows_ == 1) {
+        return data_[0][0];
+    }
+
+    // 基础情况：2x2 矩阵
+    if (rows_ == 2) {
+        return data_[0][0].operator*(data_[1][1]).operator-(data_[0][1].operator*(data_[1][0]));
+    }
+
+    // 递归计算行列式
+    Entry determinant(0, 1);
+    for (int col = 0; col < cols_; ++col) {
+        Matrix subMatrix(rows_ - 1, cols_ - 1);
+
+        // 创建子矩阵
+        for (int subRow = 1; subRow < rows_; ++subRow) {
+            int subColIndex = 0;
+            for (int subCol = 0; subCol < cols_; ++subCol) {
+                if (subCol == col) continue;
+                subMatrix.setEntry(subRow - 1, subColIndex, data_[subRow][subCol]);
+                subColIndex++;
+            }
+        }
+
+        // 递归计算子矩阵的行列式
+        Entry subDeterminant = subMatrix.getDeterminant();
+        Entry cofactor = data_[0][col].operator*(subDeterminant);
+
+        // 根据位置调整符号
+        if (col % 2 == 0) {
+            determinant = determinant.operator+(cofactor);
+        } else {
+            determinant = determinant.operator-(cofactor);
+        }
+    }
+
+    return determinant;
+}
+Matrix Matrix::inverse() const {
+
+    Entry det = getDeterminant();
+    int n = rows_;
+    Matrix adjugate(n, n);
+
+    // 计算伴随矩阵
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            // 创建子矩阵
+            Matrix subMatrix(n - 1, n - 1);
+            for (int subRow = 0; subRow < n; ++subRow) {
+                if (subRow == i) continue;
+                for (int subCol = 0; subCol < n; ++subCol) {
+                    if (subCol == j) continue;
+                    int destRow = subRow < i ? subRow : subRow - 1;
+                    int destCol = subCol < j ? subCol : subCol - 1;
+                    subMatrix.setEntry(destRow, destCol, data_[subRow][subCol]);
+                }
+            }
+
+            // 计算余子式
+            Entry subDeterminant = subMatrix.getDeterminant();
+            Entry cofactor = ((i + j) % 2 == 0) ? subDeterminant : subDeterminant.operator-();
+
+            // 伴随矩阵的元素是余子式的转置
+            adjugate.setEntry(j, i, cofactor);
+        }
+    }
+
+    // 计算逆矩阵
+    Matrix inverse(n, n);
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            inverse.setEntry(i, j, adjugate.getEntry(i, j).operator/(det));
+        }
+    }
+
+    return inverse;
+}
