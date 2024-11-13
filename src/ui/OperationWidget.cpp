@@ -27,7 +27,7 @@ OperationWidget::OperationWidget(QWidget *parent) : QWidget(parent) {
     mainLayout->addWidget(back_.get());
     mainBox_->setLayout(mainLayout);
 
-    inputBox_->setFixedSize(150, 100);
+    inputBox_->setFixedSize(150, 120);
     iostreamInputButton_ = std::make_shared<QPushButton>("输入流输入", this);
     fileInputButton_ = std::make_shared<QPushButton>("文件输入", this);
     boxInputButton_ = std::make_shared<QPushButton>("输入框输入", this);
@@ -35,6 +35,7 @@ OperationWidget::OperationWidget(QWidget *parent) : QWidget(parent) {
 
     inputLayout->addWidget(iostreamInputButton_.get());
     inputLayout->addWidget(fileInputButton_.get());
+    inputLayout->addWidget(boxInputButton_.get());
     inputBox_->setLayout(inputLayout);
 
     luDecompositionButton_ = std::make_shared<QPushButton>("LU分解");

@@ -47,6 +47,7 @@ constexpr auto qt_meta_stringdata_CLASSOperationWidgetENDCLASS = QtMocHelpers::s
     "fileInputMatrixRequested",
     "startRequested",
     "iostreamInputMatrixRequested",
+    "boxInputMatrixRequested",
     "backRequested"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
@@ -60,26 +61,28 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSOperationWidgetENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      10,   14, // methods
+      11,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-      10,       // signalCount
+      11,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,   74,    2, 0x06,    1 /* Public */,
-       3,    0,   75,    2, 0x06,    2 /* Public */,
-       4,    0,   76,    2, 0x06,    3 /* Public */,
-       5,    0,   77,    2, 0x06,    4 /* Public */,
-       6,    0,   78,    2, 0x06,    5 /* Public */,
-       7,    0,   79,    2, 0x06,    6 /* Public */,
-       8,    0,   80,    2, 0x06,    7 /* Public */,
-       9,    0,   81,    2, 0x06,    8 /* Public */,
-      10,    0,   82,    2, 0x06,    9 /* Public */,
-      11,    0,   83,    2, 0x06,   10 /* Public */,
+       1,    0,   80,    2, 0x06,    1 /* Public */,
+       3,    0,   81,    2, 0x06,    2 /* Public */,
+       4,    0,   82,    2, 0x06,    3 /* Public */,
+       5,    0,   83,    2, 0x06,    4 /* Public */,
+       6,    0,   84,    2, 0x06,    5 /* Public */,
+       7,    0,   85,    2, 0x06,    6 /* Public */,
+       8,    0,   86,    2, 0x06,    7 /* Public */,
+       9,    0,   87,    2, 0x06,    8 /* Public */,
+      10,    0,   88,    2, 0x06,    9 /* Public */,
+      11,    0,   89,    2, 0x06,   10 /* Public */,
+      12,    0,   90,    2, 0x06,   11 /* Public */,
 
  // signals: parameters
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -121,6 +124,8 @@ Q_CONSTINIT const QMetaObject OperationWidget::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'iostreamInputMatrixRequested'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'boxInputMatrixRequested'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'backRequested'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
@@ -142,7 +147,8 @@ void OperationWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         case 6: _t->fileInputMatrixRequested(); break;
         case 7: _t->startRequested(); break;
         case 8: _t->iostreamInputMatrixRequested(); break;
-        case 9: _t->backRequested(); break;
+        case 9: _t->boxInputMatrixRequested(); break;
+        case 10: _t->backRequested(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -212,8 +218,15 @@ void OperationWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         }
         {
             using _t = void (OperationWidget::*)();
-            if (_t _q_method = &OperationWidget::backRequested; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+            if (_t _q_method = &OperationWidget::boxInputMatrixRequested; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
                 *result = 9;
+                return;
+            }
+        }
+        {
+            using _t = void (OperationWidget::*)();
+            if (_t _q_method = &OperationWidget::backRequested; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+                *result = 10;
                 return;
             }
         }
@@ -240,13 +253,13 @@ int OperationWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 10)
+        if (_id < 11)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 10;
+        _id -= 11;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 10)
+        if (_id < 11)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 10;
+        _id -= 11;
     }
     return _id;
 }
@@ -306,8 +319,14 @@ void OperationWidget::iostreamInputMatrixRequested()
 }
 
 // SIGNAL 9
-void OperationWidget::backRequested()
+void OperationWidget::boxInputMatrixRequested()
 {
     QMetaObject::activate(this, &staticMetaObject, 9, nullptr);
+}
+
+// SIGNAL 10
+void OperationWidget::backRequested()
+{
+    QMetaObject::activate(this, &staticMetaObject, 10, nullptr);
 }
 QT_WARNING_POP

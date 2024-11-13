@@ -1331,7 +1331,9 @@ MainWindow.o: ../src/ui/MainWindow.cpp ../src/ui/MainWindow.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/QInputDialog \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/qinputdialog.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/QLineEdit \
-		/opt/homebrew/lib/QtWidgets.framework/Headers/qlineedit.h
+		/opt/homebrew/lib/QtWidgets.framework/Headers/qlineedit.h \
+		/opt/homebrew/lib/QtWidgets.framework/Headers/QApplication \
+		/opt/homebrew/lib/QtWidgets.framework/Headers/qapplication.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o MainWindow.o ../src/ui/MainWindow.cpp
 
 OperationWidget.o: ../src/ui/OperationWidget.cpp ../src/ui/OperationWidget.h \

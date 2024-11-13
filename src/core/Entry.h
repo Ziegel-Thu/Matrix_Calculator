@@ -10,6 +10,11 @@ public:
     long long getDenominator() const;
     bool hasValue_; // 添加此行以定义 hasValue_ 变量
 
+    Entry operator+(const Entry& other) const;
+    Entry operator-(const Entry& other) const;
+    Entry operator*(const Entry& other) const;
+    Entry operator/(const Entry& other) const;
+
 
     // 约分方法
     void reduce();
