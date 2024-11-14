@@ -54,7 +54,15 @@ void Matrix::reduceAll() {
 void Matrix::identity(){
     for (int i = 0; i < rows_; ++i) {
         for (int j = 0; j < cols_; ++j) {
-            data_[i][j] = Entry(i == j, 1);
+            if (i == j)
+            {
+                setEntry(i, j, Entry(1, 1));
+            }
+            else
+            {
+                setEntry(i, j, Entry(0, 1));
+            }
+            
         }
     }
 }

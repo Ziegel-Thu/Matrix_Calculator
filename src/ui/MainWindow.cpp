@@ -132,6 +132,8 @@ void MainWindow::handleInverse() {
         centralWidget->setLayout(layout);
     }
 
+    
+
     layout->addWidget(invWidget_.get());
 
     QLabel* equalsLabel = new QLabel("=", this);
@@ -139,17 +141,18 @@ void MainWindow::handleInverse() {
     equalsLabel->setFixedSize(20, 50);
     layout->addWidget(equalsLabel);
 
-    Matrix IdMatrix(matrix_->getRows(), matrix_->getCols());
-    IdMatrix.identity(); // 确保 IdMatrix 是单位矩阵
+    Matrix idMatrix(matrix_->getRows(), matrix_->getCols());
+    idMatrix.identity(); // 确保 IdMatrix 是单位矩阵
 
-    auto IdWidget_ = std::make_shared<BoardWidget>(IdMatrix.getRows(), IdMatrix.getCols(), this);
-    IdWidget_->setMatrix(IdMatrix);
-        layout->addWidget(equalsLabel);
+    idWidget_ = std::make_shared<BoardWidget>(idMatrix.getRows(), idMatrix.getCols(), this);
+    idWidget_->setMatrix(idMatrix);
+    layout->addWidget(idWidget_.get());
 
-    layout->addWidget(IdWidget_.get());
+
 
     QApplication::processEvents(); // 更新界面
 
+    // 输出布局中部件的数量
 }
 
 void MainWindow::handleDeterminant() {
