@@ -9,7 +9,7 @@ class BoardWidget : public QWidget {
     Q_OBJECT
 public:
     BoardWidget(int rows, int cols, QWidget *parent = nullptr);
-
+    ~BoardWidget();
     void setMatrix(const Matrix& matrix); // 设置矩阵并更新显示
 
 private:

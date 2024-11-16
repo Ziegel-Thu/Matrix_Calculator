@@ -188,7 +188,8 @@ void MainWindow::handleDeterminant() {
 }
 
 void MainWindow::handleQrDecomposition() {
-    // 执行 QR 分解的逻辑
+    
+    
 }
 
 void MainWindow::handleSvdDecomposition() {
@@ -202,7 +203,17 @@ void MainWindow::handleJordanForm() {
 // 实现 handleBack 槽函数
 void MainWindow::handleBack() {
     operationWidget_->showStartButton();
+    boardWidget_=nullptr;
+    detWidget_=nullptr;
+    pWidget_=nullptr;
+    lWidget_=nullptr;
+    uWidget_=nullptr;
+    invWidget_=nullptr;
+    idWidget_=nullptr;
+    matrix_=nullptr;
+
     setupUi();
+
 
 
 }
