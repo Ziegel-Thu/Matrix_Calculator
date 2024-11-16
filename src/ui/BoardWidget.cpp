@@ -19,6 +19,15 @@ BoardWidget::BoardWidget(int rows, int cols, QWidget *parent)
     setLayout(gridLayout_);
 }
 
+BoardWidget::~BoardWidget() {
+    for (int i = 0; i < rows_; ++i) {
+        for (int j = 0; j < cols_; ++j) {
+            delete labels_[i][j];
+        }
+    }
+    delete gridLayout_;
+}
+
 void BoardWidget::setMatrix(const Matrix& matrix) {
     for (int i = 0; i < matrix.getRows(); ++i) {
         for (int j = 0; j < matrix.getCols(); ++j) {

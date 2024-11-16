@@ -9,7 +9,14 @@ Matrix::Matrix(int rows, int cols) : rows_(rows), cols_(cols) {
     data_.resize(rows, std::vector<Entry>(cols, Entry(0, 1))); // 初始化矩阵，默认值为 0/1
 
 }
+Matrix::~Matrix() {
+    for (int i = 0; i < rows_; ++i) {
+        for (int j = 0; j < cols_; ++j) {
+            data_[i][j].~Entry();
+        }
+    }
 
+}
 int Matrix::getRows() const {
     return rows_; // 返回行数
 }
@@ -65,6 +72,43 @@ void Matrix::identity(){
             
         }
     }
+}
+Matrix Matrix::getMatrixTranspose() const{
+    Matrix result(cols_,rows_);
+    for (int i = 0; i < rows_; ++i) {
+        for (int j = 0; j < cols_; ++j) {
+            result.setEntry(j, i, getEntry(i, j));
+        }
+    }
+    return result;
+}
+Matrix Matrix::LeftMultiply (const Matrix& other) const {
+    if(other.cols_!=rows_){
+        throw std::invalid_argument("Matrix dimensions do not match");
+    }
+    Matrix result(other.rows_, cols_);
+    for (int i = 0; i < other.rows_; ++i) {
+        for (int j = 0; j < cols_; ++j) {
+            result.setEntry(i, j, other.getEntry(i, j).operator*(getEntry(j, j)));
+        }
+    }
+    return result;
+}
+Matrix Matrix::RightMultiply (const Matrix& other) const {
+    if(cols_!=other.rows_){
+        throw std::invalid_argument("Matrix dimensions do not match");
+    }
+    Matrix result(rows_, other.cols_);
+    for (int i = 0; i < rows_; ++i) {
+        for (int j = 0; j < other.cols_; ++j) {
+            Entry temp(0, 1);
+            for (int k = 0; k < cols_; ++k) {
+                temp = temp.operator+(getEntry(i, k).operator*(other.getEntry(k, j)));
+            }
+            result.setEntry(i, j, temp);
+        }
+    }
+    return result;
 }
 std::tuple<Matrix, Matrix, Matrix> Matrix::pluDecomposition() const {
     if (rows_ != cols_) {
@@ -199,4 +243,12 @@ Matrix Matrix::inverse() const {
     }
 
     return inverse;
+}
+std::pair<Matrix, Matrix> Matrix::qrDecomposition() const {
+    Matrix Q(rows_, rows_);
+    Matrix R(rows_, cols_);
+    Q.identity();
+    R=*this;
+    
+    return {Q, R};
 }

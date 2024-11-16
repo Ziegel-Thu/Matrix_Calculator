@@ -4,6 +4,7 @@
 class Entry {
 public:
     Entry(long long numerator, long long denominator);
+    ~Entry();
 
     // 获取分子和分母
     long long getNumerator() const;

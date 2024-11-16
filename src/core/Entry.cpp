@@ -10,7 +10,8 @@ Entry::Entry(long long numerator, long long denominator) {
     reduce();
     hasValue_ = false;
 }
-
+Entry::~Entry() {
+}   
 long long Entry::getNumerator() const {
     return fraction_.first;
 }
