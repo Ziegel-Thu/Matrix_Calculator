@@ -11,6 +11,7 @@ public:
     BoardWidget(int rows, int cols, QWidget *parent = nullptr);
     ~BoardWidget();
     void setMatrix(const Matrix& matrix); // 设置矩阵并更新显示
+    void setMatrixWithSquareroot(const Matrix& matrix, const std::vector<Entry>& norms); // 设置矩阵并更新显示
 
 private:
     int rows_; // 行数

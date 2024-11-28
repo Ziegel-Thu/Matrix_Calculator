@@ -1,10 +1,11 @@
+#pragma once
 #include <memory>
 #include <QWidget>
 #include <QPushButton>
 #include <QLabel>
 #include <QGroupBox>
 #include <QVBoxLayout>
-#pragma once
+
 
 class OperationWidget : public QWidget {
     Q_OBJECT

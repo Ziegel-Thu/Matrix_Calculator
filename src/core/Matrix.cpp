@@ -7,16 +7,12 @@
 
 Matrix::Matrix(int rows, int cols) : rows_(rows), cols_(cols) {
     data_.resize(rows, std::vector<Entry>(cols, Entry(0, 1))); // 初始化矩阵，默认值为 0/1
-
 }
+
 Matrix::~Matrix() {
-    for (int i = 0; i < rows_; ++i) {
-        for (int j = 0; j < cols_; ++j) {
-            data_[i][j].~Entry();
-        }
-    }
-
+    // 不需要手动调用 Entry 的析构函数
 }
+
 int Matrix::getRows() const {
     return rows_; // 返回行数
 }
@@ -41,7 +37,6 @@ bool Matrix::hasValue(int row, int col) const {
 }
 
 void Matrix::setEntry(int row, int col, const Entry& value) {
-
     if (row < 0 || row >= rows_ || col < 0 || col >= cols_) {
         throw std::out_of_range("Index out of range"); // 检查索引范围
     }
@@ -58,23 +53,17 @@ void Matrix::reduceAll() {
         }
     }
 }
-void Matrix::identity(){
+
+void Matrix::identity() {
     for (int i = 0; i < rows_; ++i) {
         for (int j = 0; j < cols_; ++j) {
-            if (i == j)
-            {
-                setEntry(i, j, Entry(1, 1));
-            }
-            else
-            {
-                setEntry(i, j, Entry(0, 1));
-            }
-            
+            setEntry(i, j, (i == j) ? Entry(1, 1) : Entry(0, 1));
         }
     }
 }
-Matrix Matrix::getMatrixTranspose() const{
-    Matrix result(cols_,rows_);
+
+Matrix Matrix::getMatrixTranspose() const {
+    Matrix result(cols_, rows_);
     for (int i = 0; i < rows_; ++i) {
         for (int j = 0; j < cols_; ++j) {
             result.setEntry(j, i, getEntry(i, j));
@@ -82,20 +71,22 @@ Matrix Matrix::getMatrixTranspose() const{
     }
     return result;
 }
-Matrix Matrix::LeftMultiply (const Matrix& other) const {
-    if(other.cols_!=rows_){
+
+Matrix Matrix::LeftMultiply(const Matrix& other) const {
+    if (other.cols_ != rows_) {
         throw std::invalid_argument("Matrix dimensions do not match");
     }
     Matrix result(other.rows_, cols_);
     for (int i = 0; i < other.rows_; ++i) {
         for (int j = 0; j < cols_; ++j) {
-            result.setEntry(i, j, other.getEntry(i, j).operator*(getEntry(j, j)));
+            result.setEntry(i, j, other.getEntry(i, j) * getEntry(j, j));
         }
     }
     return result;
 }
-Matrix Matrix::RightMultiply (const Matrix& other) const {
-    if(cols_!=other.rows_){
+
+Matrix Matrix::RightMultiply(const Matrix& other) const {
+    if (cols_ != other.rows_) {
         throw std::invalid_argument("Matrix dimensions do not match");
     }
     Matrix result(rows_, other.cols_);
@@ -103,13 +94,14 @@ Matrix Matrix::RightMultiply (const Matrix& other) const {
         for (int j = 0; j < other.cols_; ++j) {
             Entry temp(0, 1);
             for (int k = 0; k < cols_; ++k) {
-                temp = temp.operator+(getEntry(i, k).operator*(other.getEntry(k, j)));
+                temp = temp + (getEntry(i, k) * other.getEntry(k, j));
             }
             result.setEntry(i, j, temp);
         }
     }
     return result;
 }
+
 std::tuple<Matrix, Matrix, Matrix> Matrix::pluDecomposition() const {
     if (rows_ != cols_) {
         throw std::invalid_argument("PLU decomposition requires a square matrix");
@@ -147,10 +139,10 @@ std::tuple<Matrix, Matrix, Matrix> Matrix::pluDecomposition() const {
 
         // 计算 L 和 U
         for (int j = i + 1; j < n; ++j) {
-            Entry factor = U.getEntry(j, i).operator/( U.getEntry(i, i));
+            Entry factor = U.getEntry(j, i) / U.getEntry(i, i);
             L.setEntry(j, i, factor);
             for (int k = i; k < n; ++k) {
-                U.setEntry(j, k, U.getEntry(j, k).operator-( factor.operator*(  U.getEntry(i, k))));
+                U.setEntry(j, k, U.getEntry(j, k) - (factor * U.getEntry(i, k)));
             }
         }
     }
@@ -164,7 +156,6 @@ std::tuple<Matrix, Matrix, Matrix> Matrix::pluDecomposition() const {
 }
 
 Entry Matrix::getDeterminant() const {
-
     // 基础情况：1x1 矩阵
     if (rows_ == 1) {
         return data_[0][0];
@@ -172,7 +163,7 @@ Entry Matrix::getDeterminant() const {
 
     // 基础情况：2x2 矩阵
     if (rows_ == 2) {
-        return data_[0][0].operator*(data_[1][1]).operator-(data_[0][1].operator*(data_[1][0]));
+        return data_[0][0] * data_[1][1] - data_[0][1] * data_[1][0];
     }
 
     // 递归计算行列式
@@ -192,20 +183,20 @@ Entry Matrix::getDeterminant() const {
 
         // 递归计算子矩阵的行列式
         Entry subDeterminant = subMatrix.getDeterminant();
-        Entry cofactor = data_[0][col].operator*(subDeterminant);
+        Entry cofactor = data_[0][col] * subDeterminant;
 
         // 根据位置调整符号
         if (col % 2 == 0) {
-            determinant = determinant.operator+(cofactor);
+            determinant = determinant + cofactor;
         } else {
-            determinant = determinant.operator-(cofactor);
+            determinant = determinant - cofactor;
         }
     }
 
     return determinant;
 }
-Matrix Matrix::inverse() const {
 
+Matrix Matrix::inverse() const {
     Entry det = getDeterminant();
     int n = rows_;
     Matrix adjugate(n, n);
@@ -227,7 +218,7 @@ Matrix Matrix::inverse() const {
 
             // 计算余子式
             Entry subDeterminant = subMatrix.getDeterminant();
-            Entry cofactor = ((i + j) % 2 == 0) ? subDeterminant : subDeterminant.operator-();
+            Entry cofactor = ((i + j) % 2 == 0) ? subDeterminant : -subDeterminant;
 
             // 伴随矩阵的元素是余子式的转置
             adjugate.setEntry(j, i, cofactor);
@@ -238,17 +229,48 @@ Matrix Matrix::inverse() const {
     Matrix inverse(n, n);
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
-            inverse.setEntry(i, j, adjugate.getEntry(i, j).operator/(det));
+            inverse.setEntry(i, j, adjugate.getEntry(i, j) / det);
         }
     }
 
     return inverse;
 }
+
 std::pair<Matrix, Matrix> Matrix::qrDecomposition() const {
-    Matrix Q(rows_, rows_);
-    Matrix R(rows_, cols_);
+    int m = rows_;
+    int n = cols_;
+    Matrix Q(m, m);
+    Matrix R(*this); // 复制当前矩阵到 R
     Q.identity();
-    R=*this;
-    
+
+    for (int j = 0; j < n; ++j) {
+        for (int i = m - 1; i > j; --i) {
+            Entry a = R.getEntry(i - 1, j);
+            Entry b = R.getEntry(i, j);
+
+            if (b.getNumerator() != 0) {
+                // 使用 a 和 b 直接计算
+                Entry c = a;
+                Entry s = b;
+
+                // 应用 Givens 旋转到 R
+                for (int k = 0; k < n; ++k) {
+                    Entry temp1 = c * R.getEntry(i - 1, k) + s * R.getEntry(i, k);
+                    Entry temp2 = a * R.getEntry(i, k) - b * R.getEntry(i - 1, k);
+                    R.setEntry(i - 1, k, temp1);
+                    R.setEntry(i, k, temp2);
+                }
+
+                // 应用 Givens 旋转到 Q
+                for (int k = 0; k < m; ++k) {
+                    Entry temp1 = c * Q.getEntry(k, i - 1) + s * Q.getEntry(k, i);
+                    Entry temp2 = a * Q.getEntry(k, i) - b * Q.getEntry(k, i - 1);
+                    Q.setEntry(k, i - 1, temp1);
+                    Q.setEntry(k, i, temp2);
+                }
+            }
+        }
+    }
+
     return {Q, R};
 }

@@ -13,6 +13,8 @@
 #include <limits>
 #include <thread>
 #include <chrono>
+#include <vector>
+#include <cmath>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     auto centralWidget = new QWidget(this);
@@ -188,6 +190,38 @@ void MainWindow::handleDeterminant() {
 }
 
 void MainWindow::handleQrDecomposition() {
+    if(matrix_ == nullptr){
+        QMessageBox::warning(this, "输入错误", "请先输入矩阵", QMessageBox::Ok);
+        handleBack();
+        return;
+    }
+    auto [Q, R] = matrix_->qrDecomposition();
+    std::vector<Entry> norms;
+    std::vector<Entry> norms_inv;
+    for (int i = 0; i < Q.getRows(); i++)
+    {
+        Entry norm = Entry(0,1);
+        for (int j = 0; j < Q.getCols(); j++)
+        {
+            norm = norm + Q.getEntry(i, j)*Q.getEntry(i, j);
+        }
+        if(norm.getNumerator() != 0){
+            norms.push_back(norm);
+            norms_inv.push_back(Entry(norm.getDenominator(), norm.getNumerator()));
+        }
+        else{
+            QMessageBox::warning(this, "系统错误", "系统不能处理该矩阵", QMessageBox::Ok);
+            handleBack();
+            return;
+        }
+    }
+    
+    qWidget_ = std::make_shared<BoardWidget>(Q.getRows(), Q.getCols(), this);
+    qWidget_->setMatrixWithSquareroot(Q, norms_inv);
+    rWidget_ = std::make_shared<BoardWidget>(R.getRows(), R.getCols(), this);
+    rWidget_->setMatrixWithSquareroot(R, norms);
+    rWidget_->setMatrix(R);
+
     
     
 }
