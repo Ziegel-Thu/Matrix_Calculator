@@ -1,8 +1,11 @@
+#pragma once
 #include <QMainWindow>
 #include <memory>
 #include "OperationWidget.h"
 #include "BoardWidget.h"
 #include <QHBoxLayout>
+
+
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -23,6 +26,9 @@ private:
     std::shared_ptr<BoardWidget> uWidget_;
     std::shared_ptr<BoardWidget> invWidget_;
     std::shared_ptr<BoardWidget> idWidget_;
+    std::shared_ptr<BoardWidget> qWidget_;
+    std::shared_ptr<BoardWidget> rWidget_;
+
 
     QHBoxLayout *sideLayout;
 
