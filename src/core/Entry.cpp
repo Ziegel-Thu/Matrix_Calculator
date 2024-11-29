@@ -1,8 +1,7 @@
 #include "Entry.h"
 #include <stdexcept>
 #include <limits>
-
-
+#include <iostream>
 Entry::Entry(long long numerator, long long denominator) {
     if (denominator == 0) {
         throw std::invalid_argument("Denominator cannot be zero");
@@ -111,25 +110,25 @@ std::pair<Entry, long long> Entry::getSquareroot() const {
     long long numerator = fraction_.first;
     long long denominator = fraction_.second;
     Entry result(1, 1);
-
     std::vector<long long> primeList = getPrimeList();
     for(int i = 0; i < static_cast<int>(primeList.size());){
         if(numerator == 1 && denominator == 1){
             break;
         }
         if(primeList[i]*primeList[i] > numerator && primeList[i]*primeList[i] > denominator){
-            continue;
+            break;
         }
         if(numerator % (primeList[i]*primeList[i]) == 0){
             result.fraction_.first *= primeList[i];
+            numerator /= primeList[i]*primeList[i];
         }
         else if (denominator % (primeList[i]*primeList[i]) == 0){
             result.fraction_.second *= primeList[i];
+            denominator /= primeList[i]*primeList[i];
         }
         else{
             i++;
         }
-        
     }
     result.fraction_.second *= denominator;
     long long root = numerator*denominator;

@@ -215,12 +215,24 @@ void MainWindow::handleQrDecomposition() {
             return;
         }
     }
-    
+    auto centralWidget = this->centralWidget();
+    auto layout = qobject_cast<QHBoxLayout*>(centralWidget->layout());
+    if (!layout) {
+        layout = new QHBoxLayout(centralWidget);
+        centralWidget->setLayout(layout);
+    }
+    QLabel* equalsLabel = new QLabel("=", this);
+    equalsLabel->setAlignment(Qt::AlignCenter);
+    equalsLabel->setFixedSize(20, 50); // 设置等号的大小
+    layout->addWidget(equalsLabel);
     qWidget_ = std::make_shared<BoardWidget>(Q.getRows(), Q.getCols(), this);
+    layout->addWidget(qWidget_.get());
     qWidget_->setMatrixWithSquareroot(Q, norms_inv);
+    
     rWidget_ = std::make_shared<BoardWidget>(R.getRows(), R.getCols(), this);
-    rWidget_->setMatrixWithSquareroot(R, norms);
-    rWidget_->setMatrix(R);
+    layout->addWidget(rWidget_.get());
+    rWidget_->setMatrixWithSquareroot(R, norms_inv);
+
 
     
     
@@ -244,6 +256,8 @@ void MainWindow::handleBack() {
     uWidget_=nullptr;
     invWidget_=nullptr;
     idWidget_=nullptr;
+    qWidget_=nullptr;
+    rWidget_=nullptr;
     matrix_=nullptr;
 
     setupUi();
@@ -454,9 +468,6 @@ void MainWindow::handleIostreamInputMatrix() {
                         std::cout << "输入错误: 请输入有效的整数。" << std::endl;
                         
                     }
-                
-
-
             }
                 std::cout << "输入 1 退出，输入 2 重试: ";
                 int choice;
