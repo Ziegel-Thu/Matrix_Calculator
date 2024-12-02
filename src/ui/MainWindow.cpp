@@ -271,6 +271,10 @@ void MainWindow::handleBack() {
     qWidget_=nullptr;
     rWidget_=nullptr;
     matrix_=nullptr;
+    uWidget_=nullptr;
+    sigmaWidget_=nullptr;
+    vWidget_=nullptr;
+    
 
     setupUi();
 

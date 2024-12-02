@@ -121,15 +121,11 @@ std::vector<std::pair<Entry, int> > EntryPolynomial::solveRationalRoots() {
     while (temp.getDegree() >= 1) {
         Entry root = temp.solveRationalRoot();
         temp = temp.divideLinearFactor(root);
-        std::cout<<"root"<<root.getNumerator()<<"/"<<root.getDenominator()<<std::endl;
-
         int count = 1;  
-
         while (temp.getDegree() >= 1 && temp.plugIn(root) == Entry(0, 1)) {
             count++;
             temp = temp.divideLinearFactor(root);
         }
-        std::cout<<"count:"<<count<<std::endl;
         result.push_back(std::make_pair(root, count));
     }
 
@@ -148,6 +144,10 @@ std::pair<std::vector<long long>,std::vector<int> > EntryPolynomial::factorize(c
     }
     for(long long i : Entry::getPrimeList()){
         if(i*i>temp){
+            if(temp>1){
+                primeList.push_back(temp);
+                primePower.push_back(1);
+            }
             break;
         }
         int count = 0;
@@ -160,6 +160,7 @@ std::pair<std::vector<long long>,std::vector<int> > EntryPolynomial::factorize(c
             primePower.push_back(count);
         }
     }
+    
     return std::make_pair(primeList,primePower);
 }
 long long EntryPolynomial::multiply(const std::vector<long long> &primeList,const std::vector<int> &primePower){
@@ -187,10 +188,6 @@ Entry EntryPolynomial::solveRationalRoot(){
     if(factor.getIthCoefficient(0).getNumerator()==0){
         return Entry(0,1);
     }
-    for(int i = 0;i<factor.getCoefficients().size();i++){
-        std::cout<<"factor"<<i<<":"<<factor.getIthCoefficient(i).getNumerator()<<"/"<<factor.getIthCoefficient(i).getDenominator()<<" ";
-    }
-    std::cout<<std::endl;
     std::pair<std::vector<long long>,std::vector<int> > factorListLastTerm = factorize(std::abs(factor.getIthCoefficient(0).getNumerator()));
     std::pair<std::vector<long long>,std::vector<int> > factorListLeadTerm = factorize(std::abs(factor.getIthCoefficient(factor.getDegree()-1).getNumerator()));
     std::vector<int> curNumerator = std::vector<int>(factorListLastTerm.second.size(),0);

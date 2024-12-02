@@ -610,11 +610,6 @@ EntryPolynomial Matrix::calculateDeterminant(const std::vector<std::vector<Entry
         {
             determinant = determinant - cofactor;
         }
-        for (int i = 0; i < determinant.getCoefficients().size(); i++)
-        {
-            std::cout << determinant.getIthCoefficient(i).getNumerator() << "/" << determinant.getIthCoefficient(i).getDenominator() << " ";
-        }
-        std::cout << std::endl;
     }
     if (determinant.getIthCoefficient(determinant.getDegree() - 1).getNumerator() == -1)
     {
@@ -641,33 +636,15 @@ Matrix Matrix::getOrthogonalEigenBasis(const std::vector<std::pair<Entry, int> >
     while (eigenvaluesTodo.size() > 0)
     {
         Matrix temp = *this;
-        Entry eigenvalue = eigenvaluesTodo[0].first;
-        int count = eigenvaluesTodo[0].second;
+        Entry eigenvalue = eigenvaluesTodo.back().first;
+        int count = eigenvaluesTodo.back().second;
         for (int i = 0; i < rows_; i++)
         {
             temp.setEntry(i, i, temp.getEntry(i, i) - eigenvalue);
         }
         auto [Q, R, pivotIndex, nullIndex] = temp.getGramSchimdtQRDecomposition();
-        std::cout<<"Q:"<<std::endl;
-        for (int i = 0; i < Q.getRows(); i++)
-        {
-            for (int j = 0; j < Q.getCols(); j++)
-            {
-                std::cout << Q.getEntry(i, j).getNumerator() << "/" << Q.getEntry(i, j).getDenominator() << " ";
-            }
-            std::cout << std::endl;
-        }
-        std::cout<<"R:"<<std::endl;
-        for (int i = 0; i < R.getRows(); i++)
-        {
-            for (int j = 0; j < R.getCols(); j++)
-            {
-                std::cout << R.getEntry(i, j).getNumerator() << "/" << R.getEntry(i, j).getDenominator() << " ";
-            }
-            std::cout << std::endl;
-        }
+
         int rank = R.getRows();
-        std::cout << "rank:" << rank << " count:" << count << " rows_:" << rows_ << std::endl;
         if (rank + count != rows_)
         {
             throw std::invalid_argument("Matrix is not diagonalizable");
@@ -683,8 +660,6 @@ Matrix Matrix::getOrthogonalEigenBasis(const std::vector<std::pair<Entry, int> >
         Matrix V = U.inverse();
         for (int i = 0; i < count; i++)
         {
-            std::cout << i << std::endl;
-            std::cout << "nullIndex:" << nullIndex[i] << std::endl;
             std::vector<Entry> pivotCoefficients = V.RightMultiplyVector(R.getColumn(nullIndex[i])); // 计算出主元列系数
             std::vector<Entry> eigenVector(rows_, Entry(0, 1));
             for (int j = 0; j < rank; j++)
@@ -692,13 +667,9 @@ Matrix Matrix::getOrthogonalEigenBasis(const std::vector<std::pair<Entry, int> >
                 eigenVector[pivotIndex[j]] = pivotCoefficients[j];
             }
             eigenVector[nullIndex[i]] = Entry(-1, 1);
-            for(int j = 0;j<rows_;j++){
-                std::cout<<eigenVector[j].getNumerator()<<"/"<<eigenVector[j].getDenominator()<<" ";
-            }
-            std::cout<<std::endl;
             for (int k = 0; k < i; k++)
             {                
-                std::cout<<"generatedCount:"<<generatedCount<<" k:"<<k<<std::endl;
+
                 Entry innerProduct = getInnerProduct(eigenVector, result.getColumn(generatedCount + k)); // G-S正交化
                 for (int j = 0; j < rows_; j++)
                 {
@@ -706,14 +677,10 @@ Matrix Matrix::getOrthogonalEigenBasis(const std::vector<std::pair<Entry, int> >
                     eigenVector[j] = eigenVector[j] - innerProduct/norm(result.getColumn(generatedCount+k)) * result.getEntry(j, generatedCount + k);
                 }
             }
-            for(int j = 0;j<rows_;j++){
-                std::cout<<eigenVector[j].getNumerator()<<"/"<<eigenVector[j].getDenominator()<<" ";
-            }
-            std::cout<<std::endl;       
             result.setColumn(generatedCount + i, eigenVector);
         }
         generatedCount += count; // 累加生成的特征向量个数
-        eigenvaluesTodo.erase(eigenvaluesTodo.begin());
+        eigenvaluesTodo.pop_back();
     }
     return result;
 }
