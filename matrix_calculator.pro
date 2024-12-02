@@ -11,7 +11,7 @@ SOURCES += \
     src/ui/OperationWidget.cpp \
     src/ui/BoardWidget.cpp \
     src/core/Matrix.cpp \
-    src/core/Board.cpp \
+    src/core/EntryPolynomial.cpp \
     src/core/Entry.cpp
 
 HEADERS += \
@@ -19,7 +19,7 @@ HEADERS += \
     src/ui/OperationWidget.h \
     src/ui/BoardWidget.h \
     src/core/Matrix.h \
-    src/core/Board.h \
+    src/core/EntryPolynomial.h \
     src/core/Entry.h
 
 INCLUDEPATH += \

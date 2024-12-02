@@ -80,8 +80,8 @@ void MainWindow::handleLuDecomposition() {
     QApplication::processEvents(); // 更新界面
 
     // 显示 P 矩阵
-    pWidget_ = std::make_shared<BoardWidget>(P.getRows(), P.getCols(), this);
-    pWidget_->setMatrix(P);
+    permutationWidget_ = std::make_shared<BoardWidget>(P.getRows(), P.getCols(), this);
+    permutationWidget_->setMatrix(P);
 
     // 创建一个 QLabel 显示等号
     QLabel* equalsLabel = new QLabel("=", this);
@@ -89,19 +89,19 @@ void MainWindow::handleLuDecomposition() {
     equalsLabel->setFixedSize(20, 50); // 设置等号的大小
 
     layout->addWidget(equalsLabel); // 添加等号到布局
-    layout->addWidget(pWidget_.get()); // 添加 P 矩阵到布局
+    layout->addWidget(permutationWidget_.get()); // 添加 P 矩阵到布局
     QApplication::processEvents(); // 更新界面
 
     // 显示 L 矩阵
-    lWidget_ = std::make_shared<BoardWidget>(L.getRows(), L.getCols(), this);
-    lWidget_->setMatrix(L);
-    layout->addWidget(lWidget_.get());
+    lowerWidget_ = std::make_shared<BoardWidget>(L.getRows(), L.getCols(), this);
+    lowerWidget_->setMatrix(L);
+    layout->addWidget(lowerWidget_.get());
     QApplication::processEvents(); // 更新界面
 
     // 显示 U 矩阵
-    uWidget_ = std::make_shared<BoardWidget>(U.getRows(), U.getCols(), this);
-    uWidget_->setMatrix(U);
-    layout->addWidget(uWidget_.get());
+    upperWidget_ = std::make_shared<BoardWidget>(U.getRows(), U.getCols(), this);
+    upperWidget_->setMatrix(U);
+    layout->addWidget(upperWidget_.get());
     QApplication::processEvents(); // 更新界面
 }
 
@@ -196,25 +196,8 @@ void MainWindow::handleQrDecomposition() {
         return;
     }
     auto [Q, R] = matrix_->qrDecomposition();
-    std::vector<Entry> norms;
-    std::vector<Entry> norms_inv;
-    for (int i = 0; i < Q.getRows(); i++)
-    {
-        Entry norm = Entry(0,1);
-        for (int j = 0; j < Q.getCols(); j++)
-        {
-            norm = norm + Q.getEntry(i, j)*Q.getEntry(i, j);
-        }
-        if(norm.getNumerator() != 0){
-            norms.push_back(norm);
-            norms_inv.push_back(Entry(norm.getDenominator(), norm.getNumerator()));
-        }
-        else{
-            QMessageBox::warning(this, "系统错误", "系统不能处理该矩阵", QMessageBox::Ok);
-            handleBack();
-            return;
-        }
-    }
+
+    auto [norms,norms_inv] = matrix_->getColumnNormsAndInverse();
     auto centralWidget = this->centralWidget();
     auto layout = qobject_cast<QHBoxLayout*>(centralWidget->layout());
     if (!layout) {
@@ -227,11 +210,11 @@ void MainWindow::handleQrDecomposition() {
     layout->addWidget(equalsLabel);
     qWidget_ = std::make_shared<BoardWidget>(Q.getRows(), Q.getCols(), this);
     layout->addWidget(qWidget_.get());
-    qWidget_->setMatrixWithSquareroot(Q, norms_inv);
+    qWidget_->setMatrixWithSquarerootRight(Q, norms_inv);
     
     rWidget_ = std::make_shared<BoardWidget>(R.getRows(), R.getCols(), this);
     layout->addWidget(rWidget_.get());
-    rWidget_->setMatrixWithSquareroot(R, norms_inv);
+    rWidget_->setMatrixWithSquarerootLeft( norms_inv,R);
 
 
     
@@ -239,7 +222,36 @@ void MainWindow::handleQrDecomposition() {
 }
 
 void MainWindow::handleSvdDecomposition() {
-    // 执行 SVD 分解的逻辑
+    if(matrix_ == nullptr){
+        QMessageBox::warning(this, "输入错误", "请先输入矩阵", QMessageBox::Ok);
+        handleBack();
+        return;
+    }
+    auto [U,Sigma,V] = matrix_->getSVDdecomposition();
+    auto [norms_U,norms_inv_U] = U.getColumnNormsAndInverse();
+    std::cout<<std::endl;
+    auto [norms_V,norms_inv_V] = V.getColumnNormsAndInverse();
+    auto centralWidget = this->centralWidget();
+    auto layout = qobject_cast<QHBoxLayout*>(centralWidget->layout());
+    if (!layout) {
+        layout = new QHBoxLayout(centralWidget);
+        centralWidget->setLayout(layout);
+    }
+    QLabel* equalsLabel = new QLabel("=", this);
+    equalsLabel->setAlignment(Qt::AlignCenter);
+    equalsLabel->setFixedSize(20, 50); // 设置等号的大小
+    layout->addWidget(equalsLabel);
+    uWidget_ = std::make_shared<BoardWidget>(U.getRows(), U.getCols(), this);
+    layout->addWidget(uWidget_.get());
+    uWidget_->setMatrixWithSquarerootRight(U, norms_inv_U);
+    sigmaWidget_ = std::make_shared<BoardWidget>(Sigma.getRows(), Sigma.getCols(), this);
+    sigmaWidget_->setMatrixWithSVD(Sigma);
+    layout->addWidget(sigmaWidget_.get());
+    vWidget_ = std::make_shared<BoardWidget>(V.getRows(), V.getCols(), this);
+    layout->addWidget(vWidget_.get());
+    vWidget_->setTransposeMatrixWithSquarerootRight(V,norms_inv_V);
+    
+
 }
 
 void MainWindow::handleJordanForm() {
@@ -251,9 +263,9 @@ void MainWindow::handleBack() {
     operationWidget_->showStartButton();
     boardWidget_=nullptr;
     detWidget_=nullptr;
-    pWidget_=nullptr;
-    lWidget_=nullptr;
-    uWidget_=nullptr;
+    permutationWidget_=nullptr;
+    lowerWidget_=nullptr;
+    upperWidget_=nullptr;
     invWidget_=nullptr;
     idWidget_=nullptr;
     qWidget_=nullptr;
