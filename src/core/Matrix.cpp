@@ -473,7 +473,7 @@ Entry Matrix::getInnerProduct(const std::vector<Entry> &a, const std::vector<Ent
         throw std::invalid_argument("Vectors have different lengths");
     }
     Entry result(0, 1);
-    for (int i = 0; i < a.size(); i++)
+    for (int i = 0; i < static_cast<int>(a.size()); i++)
     {
         result = result + a[i] * b[i];
     }
@@ -492,7 +492,7 @@ std::vector<Entry> Matrix::entryMultiplyOnVector(const Entry &coefficient, const
 
 bool Matrix::isZeroVector(const std::vector<Entry> &a)
 {
-    for (int i = 0; i < a.size(); i++)
+    for (int i = 0; i < static_cast<int>(a.size()); i++)
     {
         if (a[i].getNumerator() != 0)
         {
@@ -521,7 +521,7 @@ std::tuple<Matrix, Matrix, std::vector<int>, std::vector<int>> Matrix::getGramSc
         }
         pivotIndex.push_back(i);
         R.setEntry(pivotIndex.size() - 1, pivotIndex.size() - 1, Entry(1, 1));
-        for(int k = 0;k<pivotIndex.size()-1;k++){
+        for(int k = 0;k<static_cast<int>(pivotIndex.size())-1;k++){
             R.setEntry(pivotIndex.size()-1, k, Entry(0, 1));
         }
         for (int j = i + 1; j < cols_; ++j)
@@ -534,7 +534,7 @@ std::tuple<Matrix, Matrix, std::vector<int>, std::vector<int>> Matrix::getGramSc
             }
         }
     }
-    while (R.getRows() > pivotIndex.size())
+    while (R.getRows() > static_cast<int>(pivotIndex.size()))
     {
         R.rowPopBack();
     }
@@ -694,7 +694,6 @@ std::tuple<Matrix, Matrix, Matrix> Matrix::getSVDdecomposition() const
     Matrix V(ATA.getRows(), ATA.getCols());
     Matrix U(AAT.getRows(), AAT.getCols());
     Matrix Sigma(rows_, cols_);
-    int n = rows_ < cols_ ? rows_ : cols_;
     std::vector<std::pair<Entry, int>> eigenvalues1 = AAT.getEigenvalues();
     U = AAT.getOrthogonalEigenBasis(eigenvalues1);
     std::vector<std::pair<Entry, int>> eigenvalues2 = ATA.getEigenvalues();
@@ -702,7 +701,7 @@ std::tuple<Matrix, Matrix, Matrix> Matrix::getSVDdecomposition() const
     std::vector<std::pair<Entry, int>> eigenvalues = rows_ < cols_ ? eigenvalues1 : eigenvalues2;
     int pos = 0;
 
-    for (int i = 0; i < eigenvalues.size(); i++)
+    for (int i = 0; i < static_cast<int>(eigenvalues.size()); i++)
     {
         Entry eigenvalue = eigenvalues[i].first;
         int count = eigenvalues[i].second;

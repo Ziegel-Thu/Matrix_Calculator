@@ -14,14 +14,14 @@ void EntryPolynomial::setCoefficients(const std::vector<Entry>& coefficients) {
 }
 
 void EntryPolynomial::setIthCoefficient(int i, const Entry& coefficient) {
-    while(i>=coefficients_.size()){
+    while(i>=static_cast<int>(coefficients_.size())){
         coefficients_.push_back(Entry(0,1));
     }
     coefficients_[i] = coefficient;
 }
 
 Entry EntryPolynomial::getIthCoefficient(int i) const {
-    if(i>=coefficients_.size()){
+    if(i>=static_cast<int>(coefficients_.size())){
         return Entry(0,1);
     }
     return coefficients_[i];
@@ -32,7 +32,7 @@ int EntryPolynomial::getDegree() const {
 }
 
 void EntryPolynomial::multiply(const Entry& factor){
-    for(int i=0;i<coefficients_.size();i++){
+    for(int i=0;i<static_cast<int>(coefficients_.size());i++){
         coefficients_[i] = coefficients_[i] * factor;
     }
 }
@@ -45,8 +45,8 @@ void EntryPolynomial::degreeCorrection(){
 
 EntryPolynomial EntryPolynomial::operator*(const EntryPolynomial& factor){
     std::vector<Entry> result(coefficients_.size()+factor.getDegree(),Entry(0,1));
-    for(int i=0;i<coefficients_.size();i++){
-        for(int j=0;j<factor.getCoefficients().size();j++){
+    for(int i=0;i<static_cast<int>(coefficients_.size());i++){
+        for(int j=0;j<static_cast<int>(factor.getCoefficients().size());j++){
             result[i+j] = result[i+j] + coefficients_[i] * factor.getIthCoefficient(j);
         }
     }
@@ -55,8 +55,8 @@ EntryPolynomial EntryPolynomial::operator*(const EntryPolynomial& factor){
 
 EntryPolynomial EntryPolynomial::operator+(const EntryPolynomial& factor){
     std::vector<Entry> result(std::max(static_cast<int>(coefficients_.size()),static_cast<int>(factor.getDegree()+1)),Entry(0,1));
-    for(int i=0;i<result.size();i++){
-        if(i<coefficients_.size())
+    for(int i=0;i<static_cast<int>(result.size());i++){
+        if(i<static_cast<int>(coefficients_.size()  ))
         {result[i] = coefficients_[i] + factor.getIthCoefficient(i);}
         else{
             result[i] = factor.getIthCoefficient(i);
@@ -68,7 +68,7 @@ EntryPolynomial EntryPolynomial::operator+(const EntryPolynomial& factor){
 
 EntryPolynomial EntryPolynomial::operator-() const {
     std::vector<Entry> result(coefficients_);
-    for(int i=0;i<result.size();i++){
+    for(int i=0;i<static_cast<int>(result.size());i++){
         result[i] = -result[i];
     }
     return EntryPolynomial(result);
