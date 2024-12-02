@@ -102,6 +102,11 @@
     "algorithm": "cpp",
     "iostream": "cpp",
     "fstream": "cpp",
-    "iomanip": "cpp"
+    "iomanip": "cpp",
+    "__hash_table": "cpp",
+    "__node_handle": "cpp",
+    "charconv": "cpp",
+    "optional": "cpp",
+    "unordered_map": "cpp"
   }
 }

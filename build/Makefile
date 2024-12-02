@@ -57,7 +57,7 @@ SOURCES       = ../src/main.cpp \
 		../src/ui/OperationWidget.cpp \
 		../src/ui/BoardWidget.cpp \
 		../src/core/Matrix.cpp \
-		../src/core/Board.cpp \
+		../src/core/EntryPolynomial.cpp \
 		../src/core/Entry.cpp moc_MainWindow.cpp \
 		moc_OperationWidget.cpp \
 		moc_BoardWidget.cpp
@@ -66,7 +66,7 @@ OBJECTS       = main.o \
 		OperationWidget.o \
 		BoardWidget.o \
 		Matrix.o \
-		Board.o \
+		EntryPolynomial.o \
 		Entry.o \
 		moc_MainWindow.o \
 		moc_OperationWidget.o \
@@ -419,13 +419,13 @@ DIST          = /opt/homebrew/share/qt/mkspecs/features/spec_pre.prf \
 		../src/ui/OperationWidget.h \
 		../src/ui/BoardWidget.h \
 		../src/core/Matrix.h \
-		../src/core/Board.h \
+		../src/core/EntryPolynomial.h \
 		../src/core/Entry.h ../src/main.cpp \
 		../src/ui/MainWindow.cpp \
 		../src/ui/OperationWidget.cpp \
 		../src/ui/BoardWidget.cpp \
 		../src/core/Matrix.cpp \
-		../src/core/Board.cpp \
+		../src/core/EntryPolynomial.cpp \
 		../src/core/Entry.cpp
 QMAKE_TARGET  = matrix_calculator
 DESTDIR       = 
@@ -1173,8 +1173,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /opt/homebrew/share/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../src/ui/MainWindow.h ../src/ui/OperationWidget.h ../src/ui/BoardWidget.h ../src/core/Matrix.h ../src/core/Board.h ../src/core/Entry.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../src/main.cpp ../src/ui/MainWindow.cpp ../src/ui/OperationWidget.cpp ../src/ui/BoardWidget.cpp ../src/core/Matrix.cpp ../src/core/Board.cpp ../src/core/Entry.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../src/ui/MainWindow.h ../src/ui/OperationWidget.h ../src/ui/BoardWidget.h ../src/core/Matrix.h ../src/core/EntryPolynomial.h ../src/core/Entry.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../src/main.cpp ../src/ui/MainWindow.cpp ../src/ui/OperationWidget.cpp ../src/ui/BoardWidget.cpp ../src/core/Matrix.cpp ../src/core/EntryPolynomial.cpp ../src/core/Entry.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -1231,6 +1231,7 @@ moc_MainWindow.cpp: ../src/ui/MainWindow.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/qgridlayout.h \
 		../src/core/Matrix.h \
 		../src/core/Entry.h \
+		../src/core/EntryPolynomial.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/QHBoxLayout \
 		moc_predefs.h \
 		/opt/homebrew/share/qt/libexec/moc
@@ -1260,6 +1261,7 @@ moc_BoardWidget.cpp: ../src/ui/BoardWidget.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/qlabel.h \
 		../src/core/Matrix.h \
 		../src/core/Entry.h \
+		../src/core/EntryPolynomial.h \
 		moc_predefs.h \
 		/opt/homebrew/share/qt/libexec/moc
 	/opt/homebrew/share/qt/libexec/moc $(DEFINES) --include /Users/apple/Desktop/Study/CS/C++/Matrix_Calaulator/matrix_calculator/build/moc_predefs.h -I/opt/homebrew/share/qt/mkspecs/macx-clang -I/Users/apple/Desktop/Study/CS/C++/Matrix_Calaulator/matrix_calculator -I/Users/apple/Desktop/Study/CS/C++/Matrix_Calaulator/matrix_calculator/src -I/Users/apple/Desktop/Study/CS/C++/Matrix_Calaulator/matrix_calculator/src/core -I/Users/apple/Desktop/Study/CS/C++/Matrix_Calaulator/matrix_calculator/src/ui -I/opt/homebrew/lib/QtWidgets.framework/Headers -I/opt/homebrew/lib/QtGui.framework/Headers -I/opt/homebrew/lib/QtCore.framework/Headers -I. -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1 -I/Library/Developer/CommandLineTools/usr/lib/clang/15.0.0/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -I/Library/Developer/CommandLineTools/usr/include -F/opt/homebrew/lib ../src/ui/BoardWidget.h -o moc_BoardWidget.cpp
@@ -1303,6 +1305,7 @@ main.o: ../src/main.cpp /opt/homebrew/lib/QtWidgets.framework/Headers/QApplicati
 		/opt/homebrew/lib/QtWidgets.framework/Headers/qgridlayout.h \
 		../src/core/Matrix.h \
 		../src/core/Entry.h \
+		../src/core/EntryPolynomial.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/QHBoxLayout
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../src/main.cpp
 
@@ -1325,6 +1328,7 @@ MainWindow.o: ../src/ui/MainWindow.cpp ../src/ui/MainWindow.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/qgridlayout.h \
 		../src/core/Matrix.h \
 		../src/core/Entry.h \
+		../src/core/EntryPolynomial.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/QHBoxLayout \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/QMessageBox \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/qmessagebox.h \
@@ -1359,15 +1363,18 @@ BoardWidget.o: ../src/ui/BoardWidget.cpp ../src/ui/BoardWidget.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/QLabel \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/qlabel.h \
 		../src/core/Matrix.h \
-		../src/core/Entry.h
+		../src/core/Entry.h \
+		../src/core/EntryPolynomial.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o BoardWidget.o ../src/ui/BoardWidget.cpp
 
 Matrix.o: ../src/core/Matrix.cpp ../src/core/Matrix.h \
-		../src/core/Entry.h
+		../src/core/Entry.h \
+		../src/core/EntryPolynomial.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Matrix.o ../src/core/Matrix.cpp
 
-Board.o: ../src/core/Board.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Board.o ../src/core/Board.cpp
+EntryPolynomial.o: ../src/core/EntryPolynomial.cpp ../src/core/EntryPolynomial.h \
+		../src/core/Entry.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o EntryPolynomial.o ../src/core/EntryPolynomial.cpp
 
 Entry.o: ../src/core/Entry.cpp ../src/core/Entry.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Entry.o ../src/core/Entry.cpp

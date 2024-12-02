@@ -20,7 +20,7 @@ long long Entry::getDenominator() const {
     return fraction_.second;
 }
 
-long long Entry::gcd(long long a, long long b) const {
+long long Entry::gcd(long long a, long long b) {
     while (b != 0) {
         long long temp = b;
         b = a % b;
