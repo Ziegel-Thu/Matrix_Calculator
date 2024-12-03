@@ -120,6 +120,7 @@ std::vector<std::pair<Entry, int> > EntryPolynomial::solveRationalRoots() {
 
     while (temp.getDegree() >= 1) {
         Entry root = temp.solveRationalRoot();
+
         temp = temp.divideLinearFactor(root);
         int count = 1;  
         while (temp.getDegree() >= 1 && temp.plugIn(root) == Entry(0, 1)) {
@@ -210,5 +211,5 @@ Entry EntryPolynomial::solveRationalRoot(){
         }
         curNumerator = temp;
     }
-    throw std::runtime_error("No rational root found");
+    throw std::runtime_error("Irrational root!");
 }

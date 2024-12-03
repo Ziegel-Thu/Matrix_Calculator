@@ -31,6 +31,7 @@ private:
     std::shared_ptr<BoardWidget> uWidget_;
     std::shared_ptr<BoardWidget> sigmaWidget_;
     std::shared_ptr<BoardWidget> vWidget_;
+    std::shared_ptr<BoardWidget> jordanWidget_;
 
 
     QHBoxLayout *sideLayout;

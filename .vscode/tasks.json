@@ -52,7 +52,8 @@
             "command": "${workspaceFolderBasename}.app/Contents/MacOS/${workspaceFolderBasename}",
             "dependsOn": [
                 "make-release"
-            ]
+            ],
+            "problemMatcher": []
         },
         {
             "label": "clean",
@@ -86,7 +87,6 @@
             ],
             "group": "build",
             "detail": "compiler: /usr/bin/clang"
-   
         }
     ]
 }

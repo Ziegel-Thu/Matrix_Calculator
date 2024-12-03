@@ -20,8 +20,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     auto centralWidget = new QWidget(this);
     auto mainLayout = new QHBoxLayout(centralWidget); // 使用水平布局
     operationWidget_ = std::make_shared<OperationWidget>(this);
-    //boardWidget_ = std::make_shared<BoardWidget>(3, 3, this); // 创建 3x3 的棋盘
-    //mainLayout->addWidget(boardWidget_.get()); 
     mainLayout->addWidget(operationWidget_.get()); 
     setCentralWidget(centralWidget);
     setupUi();
@@ -51,11 +49,13 @@ void MainWindow::handleStart(){
 }
 
 void MainWindow::setupUi(){
+    // 根据内容自动调整大小
+    adjustSize();
+    // 设置尺寸策略为首选大小
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
     operationWidget_->hideFunctionButtons();
     operationWidget_->hideInputButtons();
-
-    // 连接 back 按钮的信号
 }
 
 // 槽函数实现
@@ -215,10 +215,6 @@ void MainWindow::handleQrDecomposition() {
     rWidget_ = std::make_shared<BoardWidget>(R.getRows(), R.getCols(), this);
     layout->addWidget(rWidget_.get());
     rWidget_->setMatrixWithSquarerootLeft( norms_inv,R);
-
-
-    
-    
 }
 
 void MainWindow::handleSvdDecomposition() {
@@ -250,44 +246,149 @@ void MainWindow::handleSvdDecomposition() {
     vWidget_ = std::make_shared<BoardWidget>(V.getRows(), V.getCols(), this);
     layout->addWidget(vWidget_.get());
     vWidget_->setTransposeMatrixWithSquarerootRight(V,norms_inv_V);
-    
-
 }
 
 void MainWindow::handleJordanForm() {
-    // 计算 Jordan 标准型的逻辑
+    if(matrix_ == nullptr){
+        QMessageBox::warning(this, "输入错误", "请先输入矩阵", QMessageBox::Ok);
+        handleBack();
+        return;
+    }
+    auto J = matrix_->getJordanForm();
+    QLabel* similarLabel = new QLabel("~", this);
+    similarLabel->setAlignment(Qt::AlignCenter);
+    similarLabel->setFixedSize(20, 50);
+    auto centralWidget = this->centralWidget();
+    auto layout = qobject_cast<QHBoxLayout*>(centralWidget->layout());
+    layout->addWidget(similarLabel);
+    jordanWidget_ = std::make_shared<BoardWidget>(J.getRows(), J.getCols(), this);
+    jordanWidget_->setMatrix(J);
+    layout->addWidget(jordanWidget_.get());
 }
 
 // 实现 handleBack 槽函数
 void MainWindow::handleBack() {
     operationWidget_->showStartButton();
-    boardWidget_=nullptr;
-    detWidget_=nullptr;
-    permutationWidget_=nullptr;
-    lowerWidget_=nullptr;
-    upperWidget_=nullptr;
-    invWidget_=nullptr;
-    idWidget_=nullptr;
-    qWidget_=nullptr;
-    rWidget_=nullptr;
-    matrix_=nullptr;
-    uWidget_=nullptr;
-    sigmaWidget_=nullptr;
-    vWidget_=nullptr;
-    
-
+    boardWidget_.reset();
+    detWidget_.reset();
+    permutationWidget_.reset();
+    lowerWidget_.reset();
+    upperWidget_.reset();
+    invWidget_.reset();
+    idWidget_.reset();
+    qWidget_.reset();
+    rWidget_.reset();
+    matrix_.reset();
+    uWidget_.reset();
+    sigmaWidget_.reset();
+    vWidget_.reset();
+    jordanWidget_.reset();
     setupUi();
-
-
-
 }
 void MainWindow::handleFileInputMatrix() {
     operationWidget_->hideInputButtons();
-    operationWidget_->showFunctionButtons();
-    QMessageBox::information(this,"文件输入","读取矩阵信息完毕",QMessageBox::Ok);
+    
+    // 创建文件选择对话框
+    QMessageBox::information(this,"文件信息格式","第一行：行数 列数。第二行及以后：矩阵元素，元素之间用空格分隔，分数用'a/b'表示",QMessageBox::Ok);
+    QFileDialog fileDialog(this, "选择矩阵文件");
+    fileDialog.setNameFilter("Text files (*.txt)");
+    fileDialog.setFileMode(QFileDialog::ExistingFile);
+    
+    if (fileDialog.exec()) {
+        QStringList files = fileDialog.selectedFiles();
+        QString filename = files.at(0);
+        QFile file(filename);
+        
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QMessageBox::warning(this, "错误", "无法打开文件", QMessageBox::Ok);
+            handleBack();
+            return;
+        }
 
+        QTextStream in(&file);
+        
+        // 读取矩阵大小
+        QString firstLine = in.readLine();
+        QStringList sizes = firstLine.split(" ", Qt::SkipEmptyParts);
+        if (sizes.size() != 2) {
+            QMessageBox::warning(this, "格式错误", "第一行应包含两个数字(行数 列数)", QMessageBox::Ok);
+            handleBack();
+            return;
+        }
 
+        bool ok1, ok2;
+        int rows = sizes[0].toInt(&ok1);
+        int cols = sizes[1].toInt(&ok2);
 
+        if (!ok1 || !ok2 || rows <= 0 || cols <= 0) {
+            QMessageBox::warning(this, "格式错误", "矩阵维度必须为正整数", QMessageBox::Ok);
+            handleBack();
+            return;
+        }
+
+        // 创建矩阵和显示组件
+        matrix_ = std::make_shared<Matrix>(rows, cols);
+        boardWidget_ = std::make_shared<BoardWidget>(rows, cols, this);
+        
+        // 读取矩阵元素
+        for (int i = 0; i < rows; i++) {
+            QString line = in.readLine();
+            QStringList elements = line.split(" ", Qt::SkipEmptyParts);
+            
+            if (elements.size() != cols) {
+                QMessageBox::warning(this, "格式错误", 
+                    QString("第%1行元素数量不正确").arg(i + 1), QMessageBox::Ok);
+                handleBack();
+                return;
+            }
+
+            for (int j = 0; j < cols; j++) {
+                QString element = elements[j];
+                if (element.contains("/")) {
+                    QStringList fraction = element.split("/");
+                    if (fraction.size() != 2) {
+                        QMessageBox::warning(this, "格式错误", 
+                            QString("第%1行第%2列的分数格式错误").arg(i + 1).arg(j + 1), 
+                            QMessageBox::Ok);
+                        handleBack();
+                        return;
+                    }
+                    bool okNum, okDen;
+                    long long num = fraction[0].toLongLong(&okNum);
+                    long long den = fraction[1].toLongLong(&okDen);
+                    if (!okNum || !okDen || den == 0) {
+                        QMessageBox::warning(this, "格式错误", 
+                            QString("第%1行第%2列的数值无效").arg(i + 1).arg(j + 1), 
+                            QMessageBox::Ok);
+                        handleBack();
+                        return;
+                    }
+                    matrix_->setEntry(i, j, Entry(num, den));
+                } else {
+                    bool ok;
+                    long long value = element.toLongLong(&ok);
+                    if (!ok) {
+                        QMessageBox::warning(this, "格式错误", 
+                            QString("第%1行第%2列的数值无效").arg(i + 1).arg(j + 1), 
+                            QMessageBox::Ok);
+                        handleBack();
+                        return;
+                    }
+                    matrix_->setEntry(i, j, Entry(value, 1));
+                }
+            }
+        }
+
+        // 添加到布局并显示
+        auto centralWidget = this->centralWidget();
+        auto mainLayout = centralWidget->layout();
+        mainLayout->addWidget(boardWidget_.get());
+        boardWidget_->setMatrix(*matrix_);
+        
+        file.close();
+        operationWidget_->showFunctionButtons();
+        QMessageBox::information(this, "文件输入", "读取矩阵信息完毕", QMessageBox::Ok);
+    }
 }
 void MainWindow::handleBoxInputMatrix() {
     operationWidget_->hideStartButton();
