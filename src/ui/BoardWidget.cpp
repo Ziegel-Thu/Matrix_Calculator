@@ -128,6 +128,7 @@ void BoardWidget::setMatrixWithSquarerootLeft(const std::vector<Entry> &norms,co
         }
     }
 }
+
 void BoardWidget::setMatrixWithSquarerootRight(const Matrix &matrix,const std::vector<Entry>& norms)//等效于右乘对角阵
 {
     for (int j = 0; j < matrix.getCols(); ++j)
@@ -194,6 +195,7 @@ void BoardWidget::setMatrixWithSquarerootRight(const Matrix &matrix,const std::v
         }
     }
 }
+
 void BoardWidget::setTransposeMatrixWithSquarerootRight(const Matrix &matrix,const std::vector<Entry>& norms)//等效于"右乘对角阵"的转置
 {
     for (int j = 0; j < matrix.getCols(); j++)
