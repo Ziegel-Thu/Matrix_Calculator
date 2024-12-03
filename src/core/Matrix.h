@@ -41,6 +41,8 @@ public:
     std::tuple<Matrix,Matrix,std::vector<int>,std::vector<int> > getGramSchimdtQRDecomposition() const;
     EntryPolynomial getCharacteristicPolynomial() const;
     std::tuple<Matrix,Matrix,Matrix> getSVDdecomposition() const;
+    Matrix getJordanForm() const;
+    int getRank() const;
     EntryPolynomial calculateDeterminant(const std::vector<std::vector<EntryPolynomial> >& polyMatrix) const;
     static bool isZeroVector(const std::vector<Entry>& a);
 private:

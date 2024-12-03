@@ -551,7 +551,6 @@ EntryPolynomial Matrix::getCharacteristicPolynomial() const
     int n = rows_;
     // 创建一个多项式矩阵 A - λI
     std::vector<std::vector<EntryPolynomial>> polyMatrix(n, std::vector<EntryPolynomial>(n, EntryPolynomial({Entry(0, 1)})));
-
     for (int i = 0; i < n; ++i)
     {
         for (int j = 0; j < n; ++j)
@@ -598,10 +597,12 @@ EntryPolynomial Matrix::calculateDeterminant(const std::vector<std::vector<Entry
                 subColIndex++;
             }
         }
-
+        if(polyMatrix[0][col].getDegree()==0&&polyMatrix[0][col].getIthCoefficient(0).getNumerator()==0){
+            continue;
+        }
         EntryPolynomial subDeterminant = calculateDeterminant(subMatrix);
-        EntryPolynomial cofactor = subDeterminant * polyMatrix[0][col];
 
+        EntryPolynomial cofactor = subDeterminant * polyMatrix[0][col];
         if (col % 2 == 0)
         {
             determinant = determinant + cofactor;
@@ -615,7 +616,6 @@ EntryPolynomial Matrix::calculateDeterminant(const std::vector<std::vector<Entry
     {
         determinant = -determinant;
     }
-
     return determinant;
 }
 
@@ -713,4 +713,79 @@ std::tuple<Matrix, Matrix, Matrix> Matrix::getSVDdecomposition() const
         
     }
     return {U, Sigma, V};
+}
+
+int Matrix::getRank() const{
+    Matrix temp = *this;
+    int rank = 0;
+    for(int i = 0;i<rows_;i++){
+
+        if(isZeroVector(temp.getRow(i))){
+            continue;
+        }
+        for(int j = i+1;j<rows_;j++){
+            Entry innerProduct = getInnerProduct(temp.getRow(i),temp.getRow(j));
+            if(innerProduct.getNumerator()==0){
+            }
+            for(int k = 0;k<cols_;k++){
+                temp.setEntry(j,k,temp.getEntry(j,k)-innerProduct/norm(temp.getRow(i))*temp.getEntry(i,k));
+            }
+        }
+        rank++;
+
+    }
+    
+    return rank;
+}
+
+Matrix Matrix::getJordanForm() const
+{
+    if(rows_!=cols_){
+        throw std::invalid_argument("Matrix is not square");
+    }
+    Matrix result(rows_,cols_);
+    std::vector<std::pair<Entry,int>> eigenvalues = getEigenvalues();
+    int currentCol = 0;
+    while(eigenvalues.size()>0){
+        Entry eigenvalue = eigenvalues.back().first;
+        int count = eigenvalues.back().second;
+        std::vector<int> blockSize;
+        Matrix temp = *this;
+        for(int i = 0;i<rows_;i++){
+            for(int j = 0
+            ;j<cols_;j++){
+                if(i == j){
+                    temp.setEntry(i,j,temp.getEntry(i,j)-eigenvalue);                    
+                }
+                else{
+                    temp.setEntry(i,j,temp.getEntry(i,j));
+                }
+            }
+        }
+        Matrix Product = temp;
+        int geometricMultiplicity = rows_ - Product.getRank();
+
+        for(int i = 0; i<geometricMultiplicity;i++){
+            blockSize.push_back(1);
+        }
+        while(geometricMultiplicity<count){
+            Product = Product.RightMultiply(temp);
+            int NewGeometricMultiplicity = rows_ - Product.getRank();
+            for(int i = 0;i<NewGeometricMultiplicity-geometricMultiplicity;i++){
+                blockSize[i]++;
+            }
+            geometricMultiplicity = NewGeometricMultiplicity;
+        }
+        for(int i = 0;i<blockSize.size();i++){
+            for(int j = 0;j<blockSize[i];j++){
+                result.setEntry(currentCol,currentCol,eigenvalue);
+                if(j > 0){
+                    result.setEntry(currentCol-1,currentCol,Entry(1,1));
+                }
+                currentCol++;
+            }
+        }
+        eigenvalues.pop_back();
+    }
+    return result;
 }
