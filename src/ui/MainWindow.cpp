@@ -15,7 +15,9 @@
 #include <chrono>
 #include <vector>
 #include <cmath>
-
+#include <QFile>
+#include <QFileDialog>
+#include <QTextStream>
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     auto centralWidget = new QWidget(this);
     auto mainLayout = new QHBoxLayout(centralWidget); // 使用水平布局
@@ -285,6 +287,7 @@ void MainWindow::handleBack() {
     jordanWidget_.reset();
     setupUi();
 }
+
 void MainWindow::handleFileInputMatrix() {
     operationWidget_->hideInputButtons();
     
@@ -390,6 +393,7 @@ void MainWindow::handleFileInputMatrix() {
         QMessageBox::information(this, "文件输入", "读取矩阵信息完毕", QMessageBox::Ok);
     }
 }
+
 void MainWindow::handleBoxInputMatrix() {
     operationWidget_->hideStartButton();
     // 使用 QInputDialog 获取矩阵的大小
@@ -488,6 +492,7 @@ void MainWindow::handleBoxInputMatrix() {
         return;
     }
 }
+
 void MainWindow::handleIostreamInputMatrix() {
     operationWidget_->hideStartButton();
 
