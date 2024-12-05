@@ -54,32 +54,40 @@ jobs:
       run: |
         cd build_windows
         
-        # 1. 设置环境变量
-        $env:PATH = "${{ env.Qt6_DIR }}\bin;$env:PATH"
-        $env:QT_PLUGIN_PATH = "${{ env.Qt6_DIR }}\plugins"
+        # 设置 Qt 目录变量
+        $QtDir = "D:\a\Matrix_Calculator\Qt\6.5.0\mingw_64"
+        $BuildDir = "$(pwd)"
         
-        # 2. 创建必要的目录
+        # 设置环境变量
+        $env:PATH = "$QtDir\bin;$env:PATH"
+        $env:QT_PLUGIN_PATH = "$BuildDir"
+        $env:QT_QPA_PLATFORM_PLUGIN_PATH = "$BuildDir\platforms"
+        
+        # 创建插件目录
         New-Item -ItemType Directory -Force -Path "platforms"
         New-Item -ItemType Directory -Force -Path "styles"
         New-Item -ItemType Directory -Force -Path "imageformats"
         
-        # 3. 复制必要的 DLL 文件
-        # Qt 核心 DLL
-        Copy-Item "${{ env.Qt6_DIR }}\bin\Qt6Core.dll" .
-        Copy-Item "${{ env.Qt6_DIR }}\bin\Qt6Gui.dll" .
-        Copy-Item "${{ env.Qt6_DIR }}\bin\Qt6Widgets.dll" .
+        # 复制 Qt DLL
+        Copy-Item "$QtDir\bin\Qt6Core.dll" .
+        Copy-Item "$QtDir\bin\Qt6Gui.dll" .
+        Copy-Item "$QtDir\bin\Qt6Widgets.dll" .
         
-        # MinGW 运行时
-        Copy-Item "${{ env.Qt6_DIR }}\bin\libgcc_s_seh-1.dll" .
-        Copy-Item "${{ env.Qt6_DIR }}\bin\libstdc++-6.dll" .
-        Copy-Item "${{ env.Qt6_DIR }}\bin\libwinpthread-1.dll" .
+        # 复制 MinGW 运行时
+        Copy-Item "$QtDir\bin\libgcc_s_seh-1.dll" .
+        Copy-Item "$QtDir\bin\libstdc++-6.dll" .
+        Copy-Item "$QtDir\bin\libwinpthread-1.dll" .
         
-        # 平台插件
-        Copy-Item "${{ env.Qt6_DIR }}\plugins\platforms\qwindows.dll" "platforms\"
-        Copy-Item "${{ env.Qt6_DIR }}\plugins\styles\qwindowsvistastyle.dll" "styles\"
+        # 复制插件
+        Copy-Item "$QtDir\plugins\platforms\qwindows.dll" "platforms\"
+        Copy-Item "$QtDir\plugins\styles\qwindowsvistastyle.dll" "styles\"
+        Copy-Item "$QtDir\plugins\imageformats\qgif.dll" "imageformats\"
+        Copy-Item "$QtDir\plugins\imageformats\qico.dll" "imageformats\"
+        Copy-Item "$QtDir\plugins\imageformats\qjpeg.dll" "imageformats\"
+        Copy-Item "$QtDir\plugins\imageformats\qsvg.dll" "imageformats\"
         
-        # 4. 运行 windeployqt
-        & "${{ env.Qt6_DIR }}\bin\windeployqt.exe" `
+        # 运行 windeployqt
+        & "$QtDir\bin\windeployqt.exe" `
           --release `
           --no-translations `
           --no-system-d3d-compiler `
@@ -87,9 +95,10 @@ jobs:
           --no-quick-import `
           --force `
           --verbose 2 `
+          --dir "$BuildDir" `
           matrix_calculator.exe
         
-        # 5. 检查文件
+        # 检查文件
         Write-Host "Deployed files:"
         Get-ChildItem -Recurse
       shell: pwsh
