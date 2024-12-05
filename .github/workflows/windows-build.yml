@@ -53,7 +53,30 @@ jobs:
     - name: Deploy Qt
       run: |
         cd build_windows
-        windeployqt.exe --release --no-translations --no-system-d3d-compiler matrix_calculator.exe
+        # 设置必要的环境变量
+        $env:PATH = "${{ env.Qt6_DIR }}\bin;$env:PATH"
+        $env:QT_PLUGIN_PATH = "${{ env.Qt6_DIR }}\plugins"
+        $env:QT_QPA_PLATFORM_PLUGIN_PATH = "${{ env.Qt6_DIR }}\plugins\platforms"
+        
+        # 复制平台插件
+        New-Item -ItemType Directory -Force -Path "platforms"
+        Copy-Item "${{ env.Qt6_DIR }}\plugins\platforms\qwindows.dll" -Destination "platforms\"
+        
+        # 运行 windeployqt
+        & "${{ env.Qt6_DIR }}\bin\windeployqt.exe" `
+          --release `
+          --no-translations `
+          --no-system-d3d-compiler `
+          --no-virtualkeyboard `
+          --no-quick-import `
+          matrix_calculator.exe
+      shell: pwsh
+
+    - name: List deployed files
+      run: |
+        cd build_windows
+        Get-ChildItem -Recurse
+      shell: pwsh
         
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
