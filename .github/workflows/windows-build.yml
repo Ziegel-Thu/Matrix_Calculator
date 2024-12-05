@@ -47,7 +47,7 @@ jobs:
     - name: Check build output
       run: |
         cd build_windows
-        dir /s /b *.exe
+        Get-ChildItem -Recurse -Filter *.exe
       shell: pwsh
         
     - name: Deploy Qt
