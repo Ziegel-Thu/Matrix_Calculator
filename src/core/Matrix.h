@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include "Entry.h" // 引入 Entry 类
 #include "EntryPolynomial.h"
+#include <utility>
 class Matrix {
 public:
     Matrix(int rows, int cols); // 构造函数
