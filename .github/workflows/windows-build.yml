@@ -53,23 +53,45 @@ jobs:
     - name: Deploy Qt
       run: |
         cd build_windows
-        # 设置必要的环境变量
+        
+        # 1. 设置环境变量
         $env:PATH = "${{ env.Qt6_DIR }}\bin;$env:PATH"
         $env:QT_PLUGIN_PATH = "${{ env.Qt6_DIR }}\plugins"
-        $env:QT_QPA_PLATFORM_PLUGIN_PATH = "${{ env.Qt6_DIR }}\plugins\platforms"
         
-        # 复制平台插件
+        # 2. 创建必要的目录
         New-Item -ItemType Directory -Force -Path "platforms"
-        Copy-Item "${{ env.Qt6_DIR }}\plugins\platforms\qwindows.dll" -Destination "platforms\"
+        New-Item -ItemType Directory -Force -Path "styles"
+        New-Item -ItemType Directory -Force -Path "imageformats"
         
-        # 运行 windeployqt
+        # 3. 复制必要的 DLL 文件
+        # Qt 核心 DLL
+        Copy-Item "${{ env.Qt6_DIR }}\bin\Qt6Core.dll" .
+        Copy-Item "${{ env.Qt6_DIR }}\bin\Qt6Gui.dll" .
+        Copy-Item "${{ env.Qt6_DIR }}\bin\Qt6Widgets.dll" .
+        
+        # MinGW 运行时
+        Copy-Item "${{ env.Qt6_DIR }}\bin\libgcc_s_seh-1.dll" .
+        Copy-Item "${{ env.Qt6_DIR }}\bin\libstdc++-6.dll" .
+        Copy-Item "${{ env.Qt6_DIR }}\bin\libwinpthread-1.dll" .
+        
+        # 平台插件
+        Copy-Item "${{ env.Qt6_DIR }}\plugins\platforms\qwindows.dll" "platforms\"
+        Copy-Item "${{ env.Qt6_DIR }}\plugins\styles\qwindowsvistastyle.dll" "styles\"
+        
+        # 4. 运行 windeployqt
         & "${{ env.Qt6_DIR }}\bin\windeployqt.exe" `
           --release `
           --no-translations `
           --no-system-d3d-compiler `
           --no-virtualkeyboard `
           --no-quick-import `
+          --force `
+          --verbose 2 `
           matrix_calculator.exe
+        
+        # 5. 检查文件
+        Write-Host "Deployed files:"
+        Get-ChildItem -Recurse
       shell: pwsh
 
     - name: List deployed files
