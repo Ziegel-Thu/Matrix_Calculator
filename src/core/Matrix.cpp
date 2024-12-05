@@ -1,5 +1,6 @@
 #include "Matrix.h"
-
+#include <tuple>
+#include <utility>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
@@ -155,13 +156,16 @@ Matrix Matrix::LeftMultiply(const Matrix &other) const
         throw std::invalid_argument("Matrix dimensions do not match");
     }
     Matrix result(other.rows_, cols_);
-    for (int i = 0; i < other.rows_; ++i)
-    {
-        for (int j = 0; j < cols_; ++j)
-        {
-            result.setEntry(i, j, other.getEntry(i, j) * getEntry(j, j));
+    for (int i = 0; i < other.rows_; ++i) {
+        for (int j = 0; j < cols_; ++j) {
+            Entry temp(0, 1);
+            for (int k = 0; k < other.cols_; ++k) {
+                temp = temp + (other.getEntry(i, k) * getEntry(k, j));
+            }
+            result.setEntry(i, j, temp);
         }
     }
+
     return result;
 }
 
@@ -170,7 +174,7 @@ std::vector<Entry> Matrix::LeftMultiplyVector(const std::vector<Entry> &other) c
     std::vector<Entry> result(cols_);
     for (int i = 0; i < cols_; i++)
     {
-        result.push_back(getInnerProduct(other, getColumn(i)));
+        result[i] = getInnerProduct(other, getColumn(i));
     }
     return result;
 }
@@ -642,7 +646,11 @@ Matrix Matrix::getOrthogonalEigenBasis(const std::vector<std::pair<Entry, int> >
         {
             temp.setEntry(i, i, temp.getEntry(i, i) - eigenvalue);
         }
-        auto [Q, R, pivotIndex, nullIndex] = temp.getGramSchimdtQRDecomposition();
+        auto decomp = temp.getGramSchimdtQRDecomposition();
+        const Matrix& Q = std::get<0>(decomp);
+        const Matrix& R = std::get<1>(decomp);
+        const std::vector<int>& pivotIndex = std::get<2>(decomp);
+        const std::vector<int>& nullIndex = std::get<3>(decomp);
 
         int rank = R.getRows();
         if (rank + count != rows_)
