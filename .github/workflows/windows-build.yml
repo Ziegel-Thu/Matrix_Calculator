@@ -2,9 +2,9 @@ name: Matrix Calculator CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ MinGW-Github ]
   pull_request:
-    branches: [ main ]
+    branches: [ MinGW-Github ]
 
 jobs:
   build:
