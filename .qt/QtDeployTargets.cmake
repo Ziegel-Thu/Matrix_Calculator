@@ -1,0 +1,2 @@
+set(__QT_DEPLOY_TARGET_matrix_calculator_FILE /Users/apple/Desktop/Study/CS/C++/Matrix_Calaulator/matrix_calculator/matrix_calculator)
+set(__QT_DEPLOY_TARGET_matrix_calculator_TYPE EXECUTABLE)

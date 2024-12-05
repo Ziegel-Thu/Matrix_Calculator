@@ -60,7 +60,8 @@ SOURCES       = ../src/main.cpp \
 		../src/core/EntryPolynomial.cpp \
 		../src/core/Entry.cpp moc_MainWindow.cpp \
 		moc_OperationWidget.cpp \
-		moc_BoardWidget.cpp
+		moc_BoardWidget.cpp \
+		moc_ErrorHandler.cpp
 OBJECTS       = main.o \
 		MainWindow.o \
 		OperationWidget.o \
@@ -70,7 +71,8 @@ OBJECTS       = main.o \
 		Entry.o \
 		moc_MainWindow.o \
 		moc_OperationWidget.o \
-		moc_BoardWidget.o
+		moc_BoardWidget.o \
+		moc_ErrorHandler.o
 DIST          = /opt/homebrew/share/qt/mkspecs/features/spec_pre.prf \
 		/opt/homebrew/share/qt/mkspecs/features/device_config.prf \
 		/opt/homebrew/Cellar/qt/6.7.2_1/share/qt/mkspecs/common/unix.conf \
@@ -420,7 +422,8 @@ DIST          = /opt/homebrew/share/qt/mkspecs/features/spec_pre.prf \
 		../src/ui/BoardWidget.h \
 		../src/core/Matrix.h \
 		../src/core/EntryPolynomial.h \
-		../src/core/Entry.h ../src/main.cpp \
+		../src/core/Entry.h \
+		../src/core/ErrorHandler.h ../src/main.cpp \
 		../src/ui/MainWindow.cpp \
 		../src/ui/OperationWidget.cpp \
 		../src/ui/BoardWidget.cpp \
@@ -1173,7 +1176,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /opt/homebrew/share/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../src/ui/MainWindow.h ../src/ui/OperationWidget.h ../src/ui/BoardWidget.h ../src/core/Matrix.h ../src/core/EntryPolynomial.h ../src/core/Entry.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../src/ui/MainWindow.h ../src/ui/OperationWidget.h ../src/ui/BoardWidget.h ../src/core/Matrix.h ../src/core/EntryPolynomial.h ../src/core/Entry.h ../src/core/ErrorHandler.h $(DISTDIR)/
 	$(COPY_FILE) --parents ../src/main.cpp ../src/ui/MainWindow.cpp ../src/ui/OperationWidget.cpp ../src/ui/BoardWidget.cpp ../src/core/Matrix.cpp ../src/core/EntryPolynomial.cpp ../src/core/Entry.cpp $(DISTDIR)/
 
 
@@ -1209,9 +1212,9 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /opt/homebrew/share/qt/mkspecs/features/data/dummy.cpp
 	/Library/Developer/CommandLineTools/usr/bin/clang++ -pipe -stdlib=libc++ -O2 -std=gnu++1z $(EXPORT_ARCH_ARGS) -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -mmacosx-version-min=14.0 -Wall -Wextra -dM -E -o moc_predefs.h /opt/homebrew/share/qt/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_MainWindow.cpp moc_OperationWidget.cpp moc_BoardWidget.cpp
+compiler_moc_header_make_all: moc_MainWindow.cpp moc_OperationWidget.cpp moc_BoardWidget.cpp moc_ErrorHandler.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_MainWindow.cpp moc_OperationWidget.cpp moc_BoardWidget.cpp
+	-$(DEL_FILE) moc_MainWindow.cpp moc_OperationWidget.cpp moc_BoardWidget.cpp moc_ErrorHandler.cpp
 moc_MainWindow.cpp: ../src/ui/MainWindow.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/QMainWindow \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/qmainwindow.h \
@@ -1265,6 +1268,15 @@ moc_BoardWidget.cpp: ../src/ui/BoardWidget.h \
 		moc_predefs.h \
 		/opt/homebrew/share/qt/libexec/moc
 	/opt/homebrew/share/qt/libexec/moc $(DEFINES) --include /Users/apple/Desktop/Study/CS/C++/Matrix_Calaulator/matrix_calculator/build/moc_predefs.h -I/opt/homebrew/share/qt/mkspecs/macx-clang -I/Users/apple/Desktop/Study/CS/C++/Matrix_Calaulator/matrix_calculator -I/Users/apple/Desktop/Study/CS/C++/Matrix_Calaulator/matrix_calculator/src -I/Users/apple/Desktop/Study/CS/C++/Matrix_Calaulator/matrix_calculator/src/core -I/Users/apple/Desktop/Study/CS/C++/Matrix_Calaulator/matrix_calculator/src/ui -I/opt/homebrew/lib/QtWidgets.framework/Headers -I/opt/homebrew/lib/QtGui.framework/Headers -I/opt/homebrew/lib/QtCore.framework/Headers -I. -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1 -I/Library/Developer/CommandLineTools/usr/lib/clang/15.0.0/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -I/Library/Developer/CommandLineTools/usr/include -F/opt/homebrew/lib ../src/ui/BoardWidget.h -o moc_BoardWidget.cpp
+
+moc_ErrorHandler.cpp: ../src/core/ErrorHandler.h \
+		/opt/homebrew/lib/QtCore.framework/Headers/QString \
+		/opt/homebrew/lib/QtCore.framework/Headers/qstring.h \
+		/opt/homebrew/lib/QtCore.framework/Headers/QObject \
+		/opt/homebrew/lib/QtCore.framework/Headers/qobject.h \
+		moc_predefs.h \
+		/opt/homebrew/share/qt/libexec/moc
+	/opt/homebrew/share/qt/libexec/moc $(DEFINES) --include /Users/apple/Desktop/Study/CS/C++/Matrix_Calaulator/matrix_calculator/build/moc_predefs.h -I/opt/homebrew/share/qt/mkspecs/macx-clang -I/Users/apple/Desktop/Study/CS/C++/Matrix_Calaulator/matrix_calculator -I/Users/apple/Desktop/Study/CS/C++/Matrix_Calaulator/matrix_calculator/src -I/Users/apple/Desktop/Study/CS/C++/Matrix_Calaulator/matrix_calculator/src/core -I/Users/apple/Desktop/Study/CS/C++/Matrix_Calaulator/matrix_calculator/src/ui -I/opt/homebrew/lib/QtWidgets.framework/Headers -I/opt/homebrew/lib/QtGui.framework/Headers -I/opt/homebrew/lib/QtCore.framework/Headers -I. -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1 -I/Library/Developer/CommandLineTools/usr/lib/clang/15.0.0/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -I/Library/Developer/CommandLineTools/usr/include -F/opt/homebrew/lib ../src/core/ErrorHandler.h -o moc_ErrorHandler.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -1343,7 +1355,12 @@ MainWindow.o: ../src/ui/MainWindow.cpp ../src/ui/MainWindow.h \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/QFileDialog \
 		/opt/homebrew/lib/QtWidgets.framework/Headers/qfiledialog.h \
 		/opt/homebrew/lib/QtCore.framework/Headers/QTextStream \
-		/opt/homebrew/lib/QtCore.framework/Headers/qtextstream.h
+		/opt/homebrew/lib/QtCore.framework/Headers/qtextstream.h \
+		../src/core/ErrorHandler.h \
+		/opt/homebrew/lib/QtCore.framework/Headers/QString \
+		/opt/homebrew/lib/QtCore.framework/Headers/qstring.h \
+		/opt/homebrew/lib/QtCore.framework/Headers/QObject \
+		/opt/homebrew/lib/QtCore.framework/Headers/qobject.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o MainWindow.o ../src/ui/MainWindow.cpp
 
 OperationWidget.o: ../src/ui/OperationWidget.cpp ../src/ui/OperationWidget.h \
@@ -1375,14 +1392,29 @@ BoardWidget.o: ../src/ui/BoardWidget.cpp ../src/ui/BoardWidget.h \
 
 Matrix.o: ../src/core/Matrix.cpp ../src/core/Matrix.h \
 		../src/core/Entry.h \
-		../src/core/EntryPolynomial.h
+		../src/core/EntryPolynomial.h \
+		../src/core/ErrorHandler.h \
+		/opt/homebrew/lib/QtCore.framework/Headers/QString \
+		/opt/homebrew/lib/QtCore.framework/Headers/qstring.h \
+		/opt/homebrew/lib/QtCore.framework/Headers/QObject \
+		/opt/homebrew/lib/QtCore.framework/Headers/qobject.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Matrix.o ../src/core/Matrix.cpp
 
 EntryPolynomial.o: ../src/core/EntryPolynomial.cpp ../src/core/EntryPolynomial.h \
-		../src/core/Entry.h
+		../src/core/Entry.h \
+		../src/core/ErrorHandler.h \
+		/opt/homebrew/lib/QtCore.framework/Headers/QString \
+		/opt/homebrew/lib/QtCore.framework/Headers/qstring.h \
+		/opt/homebrew/lib/QtCore.framework/Headers/QObject \
+		/opt/homebrew/lib/QtCore.framework/Headers/qobject.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o EntryPolynomial.o ../src/core/EntryPolynomial.cpp
 
-Entry.o: ../src/core/Entry.cpp ../src/core/Entry.h
+Entry.o: ../src/core/Entry.cpp ../src/core/Entry.h \
+		../src/core/ErrorHandler.h \
+		/opt/homebrew/lib/QtCore.framework/Headers/QString \
+		/opt/homebrew/lib/QtCore.framework/Headers/qstring.h \
+		/opt/homebrew/lib/QtCore.framework/Headers/QObject \
+		/opt/homebrew/lib/QtCore.framework/Headers/qobject.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Entry.o ../src/core/Entry.cpp
 
 moc_MainWindow.o: moc_MainWindow.cpp 
@@ -1393,6 +1425,9 @@ moc_OperationWidget.o: moc_OperationWidget.cpp
 
 moc_BoardWidget.o: moc_BoardWidget.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_BoardWidget.o moc_BoardWidget.cpp
+
+moc_ErrorHandler.o: moc_ErrorHandler.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_ErrorHandler.o moc_ErrorHandler.cpp
 
 ####### Install
 

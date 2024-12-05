@@ -1,7 +1,7 @@
 #include "EntryPolynomial.h"
+#include "ErrorHandler.h"
 #include <algorithm>
 #include <iostream>
-#include <limits>
 #include <cmath>
 
 EntryPolynomial::EntryPolynomial(const std::vector<Entry>& coefficients) : coefficients_(coefficients) {}
@@ -108,7 +108,8 @@ long long EntryPolynomial::findCommonMultiple(const EntryPolynomial& factor){
         
         result = result/temp * factor.getIthCoefficient(i).getDenominator();//尽量防止溢出
         if(result>std::numeric_limits<long long>::max()){
-            throw std::overflow_error("Common multiple exceeds long long limits");
+            emit ErrorHandler::getInstance().errorOccurred("Common multiple exceeds long long limits");
+            return 0;
         }
     }
     return result;
@@ -117,6 +118,9 @@ long long EntryPolynomial::findCommonMultiple(const EntryPolynomial& factor){
 std::vector<std::pair<Entry, int> > EntryPolynomial::solveRationalRoots() {
     EntryPolynomial factor = *this;
     long long commonMultiple = findCommonMultiple(factor);
+    if (commonMultiple == 0) {
+        return {};
+    }
     EntryPolynomial temp = factor;
     temp.multiply(Entry(commonMultiple, 1));
     std::vector<std::pair<Entry, int> > result;
@@ -138,7 +142,8 @@ std::vector<std::pair<Entry, int> > EntryPolynomial::solveRationalRoots() {
 
 std::pair<std::vector<long long>,std::vector<int> > EntryPolynomial::factorize(const long long &n){
     if(n==0){
-        throw std::invalid_argument("Number is 0");
+        emit ErrorHandler::getInstance().errorOccurred("Number is 0");
+        return {};
     }
     long long temp = n;
     std::vector<long long> primeList;
@@ -167,6 +172,7 @@ std::pair<std::vector<long long>,std::vector<int> > EntryPolynomial::factorize(c
     
     return std::make_pair(primeList,primePower);
 }
+
 long long EntryPolynomial::multiply(const std::vector<long long> &primeList,const std::vector<int> &primePower){
     long long result = 1;
     for(int i = 0;i<primeList.size();i++){
@@ -174,6 +180,7 @@ long long EntryPolynomial::multiply(const std::vector<long long> &primeList,cons
     }
     return result;
 }
+
 std::vector<int> EntryPolynomial::nextFactor(std::vector<int> cur, const std::pair<std::vector<long long>,std::vector<int> > &result){
     for(int i = 0;i<cur.size();i++){
         if(cur[i]<result.second[i]){
@@ -184,10 +191,12 @@ std::vector<int> EntryPolynomial::nextFactor(std::vector<int> cur, const std::pa
     }
     return std::vector<int>(cur.size(),0);
 }
+
 Entry EntryPolynomial::solveRationalRoot(){
     EntryPolynomial factor = *this;
     if(factor.getDegree()==0){
-        throw std::invalid_argument("Polynomial degree is 0");
+        emit ErrorHandler::getInstance().errorOccurred("Polynomial degree is 0");
+        return Entry(0, 1);
     }
     if(factor.getIthCoefficient(0).getNumerator()==0){
         return Entry(0,1);
@@ -214,5 +223,6 @@ Entry EntryPolynomial::solveRationalRoot(){
         }
         curNumerator = temp;
     }
-    throw std::runtime_error("Irrational root!");
+    emit ErrorHandler::getInstance().errorOccurred("Irrational root!");
+    return Entry(0, 1);
 }

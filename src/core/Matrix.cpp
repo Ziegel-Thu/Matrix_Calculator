@@ -1,4 +1,5 @@
 #include "Matrix.h"
+#include "ErrorHandler.h"
 #include <tuple>
 #include <utility>
 #include <iostream>
@@ -6,11 +7,14 @@
 #include <vector>
 #include <algorithm>
 
-Matrix::Matrix(int rows, int cols) : rows_(rows), cols_(cols)
-{
-    data_.resize(rows, std::vector<Entry>(cols, Entry(0, 1))); // 初始化矩阵，默认值为 0/1
+Matrix::Matrix(int rows, int cols) : rows_(rows), cols_(cols) {
+    if (rows <= 0 || cols <= 0) {
+        emit ErrorHandler::getInstance().errorOccurred("矩阵维度必须为正数");
+        rows_ = 1;
+        cols_ = 1;
+    }
+    data_.resize(rows_, std::vector<Entry>(cols_, Entry(0, 1)));
 }
-
 Matrix::~Matrix()
 {
     // 不需要手动调用 Entry 的析构函数
@@ -30,6 +34,20 @@ std::vector<Entry> Matrix::getRow(int row) const
 {
     return data_[row];
 }
+
+
+Entry Matrix::getEntry(int row, int col) const {
+    if (row < 0 || row >= rows_ || col < 0 || col >= cols_) {
+        emit ErrorHandler::getInstance().errorOccurred("索引超出范围");
+        return Entry(0, 1);
+    }
+    if (!data_[row][col].hasValue_) {
+        emit ErrorHandler::getInstance().errorOccurred("元素未初始化");
+        return Entry(0, 1);
+    }
+    return data_[row][col];
+}
+
 
 std::vector<Entry> Matrix::getColumn(int col) const
 {
@@ -58,22 +76,6 @@ void Matrix::setRow(int row, const std::vector<Entry> &values)
     }
 }
 
-Entry Matrix::getEntry(int row, int col) const
-{
-    if (row < 0 || row >= rows_ || col < 0 || col >= cols_)
-    {
-        throw std::out_of_range("Index out of range"); // 检查索引范围
-    }
-    if (data_[row][col].hasValue_)
-    {
-        return data_[row][col]; // 返回指定位置的元素
-    }
-    else
-    {
-        throw std::invalid_argument("Entry has no value"); // 检查元素是否有值
-    }
-}
-
 void Matrix::rowPopBack()
 {
     data_.pop_back();
@@ -94,13 +96,12 @@ bool Matrix::hasValue(int row, int col) const
     return data_[row][col].hasValue_;
 }
 
-void Matrix::setEntry(int row, int col, const Entry &value)
-{
-    if (row < 0 || row >= rows_ || col < 0 || col >= cols_)
-    {
-        throw std::out_of_range("Index out of range"); // 检查索引范围
+void Matrix::setEntry(int row, int col, const Entry &value) {
+    if (row < 0 || row >= rows_ || col < 0 || col >= cols_) {
+        emit ErrorHandler::getInstance().errorOccurred("索引超出范围");
+        return;
     }
-    data_[row][col] = value; // 设置指定位置的元素
+    data_[row][col] = value;
     data_[row][col].hasValue_ = true;
 }
 
@@ -151,9 +152,9 @@ Matrix Matrix::getIdentityMatrix(int n) const
 
 Matrix Matrix::LeftMultiply(const Matrix &other) const
 {
-    if (other.cols_ != rows_)
-    {
-        throw std::invalid_argument("Matrix dimensions do not match");
+    if (other.cols_ != rows_) {
+        emit ErrorHandler::getInstance().errorOccurred("矩阵维度不匹配");
+        return Matrix(1, 1);
     }
     Matrix result(other.rows_, cols_);
     for (int i = 0; i < other.rows_; ++i) {
@@ -181,9 +182,9 @@ std::vector<Entry> Matrix::LeftMultiplyVector(const std::vector<Entry> &other) c
 
 Matrix Matrix::RightMultiply(const Matrix &other) const
 {
-    if (cols_ != other.rows_)
-    {
-        throw std::invalid_argument("Matrix dimensions do not match");
+    if (cols_ != other.rows_) {
+        emit ErrorHandler::getInstance().errorOccurred("矩阵维度不匹配");
+        return Matrix(1, 1);
     }
     Matrix result(rows_, other.cols_);
     for (int i = 0; i < rows_; ++i)
@@ -235,7 +236,8 @@ std::pair<std::vector<Entry>, std::vector<Entry>> Matrix::getColumnNormsAndInver
         }
         else
         {
-            throw std::runtime_error("Orthogonal matrix cannot have 0 vector");
+            emit ErrorHandler::getInstance().errorOccurred("正交矩阵不能有零向量");
+            return std::make_pair(std::vector<Entry>(), std::vector<Entry>());
         }
     }
     return std::make_pair(result, result_inverse);
@@ -243,9 +245,9 @@ std::pair<std::vector<Entry>, std::vector<Entry>> Matrix::getColumnNormsAndInver
 
 std::tuple<Matrix, Matrix, Matrix> Matrix::pluDecomposition() const
 {
-    if (rows_ != cols_)
-    {
-        throw std::invalid_argument("PLU decomposition requires a square matrix");
+    if (rows_ != cols_) {
+        emit ErrorHandler::getInstance().errorOccurred("PLU分解需要方阵");
+        return std::make_tuple(Matrix(1,1), Matrix(1,1), Matrix(1,1));
     }
 
     int n = rows_;
@@ -279,9 +281,9 @@ std::tuple<Matrix, Matrix, Matrix> Matrix::pluDecomposition() const
         }
 
         // 检查主元是否为零
-        if (U.getEntry(i, i).getNumerator() == 0)
-        {
-            throw std::runtime_error("Matrix is singular and cannot be decomposed");
+        if (U.getEntry(i, i).getNumerator() == 0) {
+            emit ErrorHandler::getInstance().errorOccurred("矩阵是奇异的，无法进行PLU分解");
+            return std::make_tuple(Matrix(1,1), Matrix(1,1), Matrix(1,1));
         }
 
         // 计算 L 和 U
@@ -367,7 +369,8 @@ Matrix Matrix::inverse() const
     Entry det = getDeterminant();
     int n = rows_;
     if(det.getNumerator()==0){
-        throw std::runtime_error("Matrix is singular and cannot be inverted");
+        emit ErrorHandler::getInstance().errorOccurred("矩阵是奇异的，无法求逆");
+        return Matrix(rows_, cols_);
     }
     if(n==1){
         Matrix result(1,1);
@@ -472,9 +475,9 @@ std::pair<Matrix, Matrix> Matrix::qrDecomposition() const
 
 Entry Matrix::getInnerProduct(const std::vector<Entry> &a, const std::vector<Entry> &b)
 {
-    if (a.size() != b.size())
-    {
-        throw std::invalid_argument("Vectors have different lengths");
+    if (a.size() != b.size()) {
+        emit ErrorHandler::getInstance().errorOccurred("向量长度不一致");
+        return Entry(0, 1);
     }
     Entry result(0, 1);
     for (int i = 0; i < static_cast<int>(a.size()); i++)
@@ -508,9 +511,9 @@ bool Matrix::isZeroVector(const std::vector<Entry> &a)
 
 std::tuple<Matrix, Matrix, std::vector<int>, std::vector<int>> Matrix::getGramSchimdtQRDecomposition() const
 {
-    if (rows_ != cols_)
-    {
-        throw std::invalid_argument("Matrix is not square");
+    if (rows_ != cols_) {
+        emit ErrorHandler::getInstance().errorOccurred("矩阵不是方阵");
+        return std::make_tuple(Matrix(1,1), Matrix(1,1), std::vector<int>(), std::vector<int>());
     }
     Matrix Q(*this);
     Matrix R(rows_, cols_);
@@ -547,9 +550,9 @@ std::tuple<Matrix, Matrix, std::vector<int>, std::vector<int>> Matrix::getGramSc
 
 EntryPolynomial Matrix::getCharacteristicPolynomial() const
 {
-    if (rows_ != cols_)
-    {
-        throw std::invalid_argument("Matrix is not square");
+    if (rows_ != cols_) {
+        emit ErrorHandler::getInstance().errorOccurred("矩阵不是方阵");
+        return EntryPolynomial();
     }
 
     int n = rows_;
@@ -630,9 +633,9 @@ std::vector<std::pair<Entry, int>> Matrix::getEigenvalues() const
 
 Matrix Matrix::getOrthogonalEigenBasis(const std::vector<std::pair<Entry, int> >&eigenvalues) const
 {
-    if (rows_ != cols_)
-    {
-        throw std::invalid_argument("Matrix is not square");
+    if (rows_ != cols_) {
+        emit ErrorHandler::getInstance().errorOccurred("矩阵不是方阵");
+        return Matrix(1, 1);
     }
     Matrix result(rows_, rows_);
     int generatedCount = 0;
@@ -652,9 +655,9 @@ Matrix Matrix::getOrthogonalEigenBasis(const std::vector<std::pair<Entry, int> >
         const std::vector<int>& nullIndex = std::get<3>(decomp);
 
         int rank = R.getRows();
-        if (rank + count != rows_)
-        {
-            throw std::invalid_argument("Matrix is not diagonalizable");
+        if (rank + count != rows_) {
+            emit ErrorHandler::getInstance().errorOccurred("矩阵不可对角化");
+            return Matrix(1, 1);
         }
         Matrix U(rank, rank);
         for (int i = 0; i < rank; i++)
@@ -686,7 +689,7 @@ Matrix Matrix::getOrthogonalEigenBasis(const std::vector<std::pair<Entry, int> >
             }
             result.setColumn(generatedCount + i, eigenVector);
         }
-        generatedCount += count; // 累加生成的特征向量个数
+        generatedCount += count; // 累加生成的特征向量个��
         eigenvaluesTodo.pop_back();
     }
     return result;
@@ -747,8 +750,9 @@ int Matrix::getRank() const{
 
 Matrix Matrix::getJordanForm() const
 {
-    if(rows_!=cols_){
-        throw std::invalid_argument("Matrix is not square");
+    if (rows_ != cols_) {
+        emit ErrorHandler::getInstance().errorOccurred("矩阵不是方阵");
+        return Matrix(1, 1);
     }
     Matrix result(rows_,cols_);
     std::vector<std::pair<Entry,int>> eigenvalues = getEigenvalues();

@@ -20,7 +20,8 @@ HEADERS += \
     src/ui/BoardWidget.h \
     src/core/Matrix.h \
     src/core/EntryPolynomial.h \
-    src/core/Entry.h
+    src/core/Entry.h \
+    src/core/ErrorHandler.h
 
 INCLUDEPATH += \
     src \
