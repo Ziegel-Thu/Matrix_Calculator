@@ -18,7 +18,12 @@ set(SOURCES
     src/ui/OperationWidget.h
     src/ui/BoardWidget.cpp
     src/ui/BoardWidget.h
-    # 添加你的其他源文件...
+    src/core/Matrix.cpp
+    src/core/Matrix.h
+    src/core/Entry.cpp
+    src/core/Entry.h
+    src/core/EntryPolynomial.cpp
+    src/core/EntryPolynomial.h
     src/main.cpp
 )
 
