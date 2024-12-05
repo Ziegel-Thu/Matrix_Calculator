@@ -2,6 +2,8 @@
 #include <stdexcept>
 #include <limits>
 #include <iostream>
+#include <cmath>
+#include <algorithm>
 Entry::Entry(long long numerator, long long denominator) {
     if (denominator == 0) {
         throw std::invalid_argument("Denominator cannot be zero");
