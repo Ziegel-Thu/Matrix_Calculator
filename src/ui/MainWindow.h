@@ -32,6 +32,8 @@ private:
     std::shared_ptr<BoardWidget> sigmaWidget_;
     std::shared_ptr<BoardWidget> vWidget_;
     std::shared_ptr<BoardWidget> jordanWidget_;
+    std::shared_ptr<QLabel> equalsLabel_;
+
 
 
     QHBoxLayout *sideLayout;

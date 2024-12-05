@@ -86,11 +86,11 @@ void MainWindow::handleLuDecomposition() {
     permutationWidget_->setMatrix(P);
 
     // 创建一个 QLabel 显示等号
-    QLabel* equalsLabel = new QLabel("=", this);
-    equalsLabel->setAlignment(Qt::AlignCenter);
-    equalsLabel->setFixedSize(20, 50); // 设置等号的大小
+    equalsLabel_ = std::make_shared<QLabel>("=", this);
+    equalsLabel_->setAlignment(Qt::AlignCenter);
+    equalsLabel_->setFixedSize(20, 50); // 设置等号的大小
 
-    layout->addWidget(equalsLabel); // 添加等号到布局
+    layout->addWidget(equalsLabel_.get()); // 添加等号到布局
     layout->addWidget(permutationWidget_.get()); // 添加 P 矩阵到布局
     QApplication::processEvents(); // 更新界面
 
@@ -104,10 +104,12 @@ void MainWindow::handleLuDecomposition() {
     upperWidget_ = std::make_shared<BoardWidget>(U.getRows(), U.getCols(), this);
     upperWidget_->setMatrix(U);
     layout->addWidget(upperWidget_.get());
+
     QApplication::processEvents(); // 更新界面
 }
 
 void MainWindow::handleInverse() {
+    operationWidget_->hideFunctionButtons();
     if(matrix_ == nullptr){
         QMessageBox::warning(this, "输入错误", "请先输入矩阵", QMessageBox::Ok);
         handleBack();
@@ -140,10 +142,10 @@ void MainWindow::handleInverse() {
 
     layout->addWidget(invWidget_.get());
 
-    QLabel* equalsLabel = new QLabel("=", this);
-    equalsLabel->setAlignment(Qt::AlignCenter);
-    equalsLabel->setFixedSize(20, 50);
-    layout->addWidget(equalsLabel);
+    equalsLabel_ = std::make_shared<QLabel>("=", this);
+    equalsLabel_->setAlignment(Qt::AlignCenter);
+    equalsLabel_->setFixedSize(20, 50);
+    layout->addWidget(equalsLabel_.get());
 
     Matrix idMatrix(matrix_->getRows(), matrix_->getCols());
     idMatrix.identity(); // 确保 IdMatrix 是单位矩阵
@@ -160,6 +162,7 @@ void MainWindow::handleInverse() {
 }
 
 void MainWindow::handleDeterminant() {
+    operationWidget_->hideFunctionButtons();
     if(matrix_ == nullptr){
         QMessageBox::warning(this, "输入错误", "请先输入矩阵", QMessageBox::Ok);
         handleBack();
@@ -179,12 +182,12 @@ void MainWindow::handleDeterminant() {
         layout = new QHBoxLayout(centralWidget);
         centralWidget->setLayout(layout);
     }
-    QLabel* equalsLabel = new QLabel("=", this);
-    equalsLabel->setAlignment(Qt::AlignCenter);
-    equalsLabel->setFixedSize(20, 50); // 设置等号的大小
+    equalsLabel_ = std::make_shared<QLabel>("=", this);
+    equalsLabel_->setAlignment(Qt::AlignCenter);
+    equalsLabel_->setFixedSize(20, 50); // 设置等号的大小
     detWidget_ = std::make_shared<BoardWidget>(1, 1, this);
     detWidget_->setMatrix(detMatrix);
-    layout->addWidget(equalsLabel);
+    layout->addWidget(equalsLabel_.get());
     layout->addWidget(detWidget_.get());
     QApplication::processEvents(); // 更新界面
     // 计算行列式的逻辑
@@ -192,6 +195,7 @@ void MainWindow::handleDeterminant() {
 }
 
 void MainWindow::handleQrDecomposition() {
+    operationWidget_->hideFunctionButtons();
     if(matrix_ == nullptr){
         QMessageBox::warning(this, "输入错误", "请先输入矩阵", QMessageBox::Ok);
         handleBack();
@@ -206,10 +210,10 @@ void MainWindow::handleQrDecomposition() {
         layout = new QHBoxLayout(centralWidget);
         centralWidget->setLayout(layout);
     }
-    QLabel* equalsLabel = new QLabel("=", this);
-    equalsLabel->setAlignment(Qt::AlignCenter);
-    equalsLabel->setFixedSize(20, 50); // 设置等号的大小
-    layout->addWidget(equalsLabel);
+    equalsLabel_ = std::make_shared<QLabel>("=", this);
+    equalsLabel_->setAlignment(Qt::AlignCenter);
+    equalsLabel_->setFixedSize(20, 50); // 设置等号的大小
+    layout->addWidget(equalsLabel_.get());
     qWidget_ = std::make_shared<BoardWidget>(Q.getRows(), Q.getCols(), this);
     layout->addWidget(qWidget_.get());
     qWidget_->setMatrixWithSquarerootRight(Q, norms_inv);
@@ -220,6 +224,7 @@ void MainWindow::handleQrDecomposition() {
 }
 
 void MainWindow::handleSvdDecomposition() {
+    operationWidget_->hideFunctionButtons();
     if(matrix_ == nullptr){
         QMessageBox::warning(this, "输入错误", "请先输入矩阵", QMessageBox::Ok);
         handleBack();
@@ -235,10 +240,10 @@ void MainWindow::handleSvdDecomposition() {
         layout = new QHBoxLayout(centralWidget);
         centralWidget->setLayout(layout);
     }
-    QLabel* equalsLabel = new QLabel("=", this);
-    equalsLabel->setAlignment(Qt::AlignCenter);
-    equalsLabel->setFixedSize(20, 50); // 设置等号的大小
-    layout->addWidget(equalsLabel);
+    equalsLabel_ = std::make_shared<QLabel>("=", this);
+    equalsLabel_->setAlignment(Qt::AlignCenter);
+    equalsLabel_->setFixedSize(20, 50); // 设置等号的大小
+    layout->addWidget(equalsLabel_.get());
     uWidget_ = std::make_shared<BoardWidget>(U.getRows(), U.getCols(), this);
     layout->addWidget(uWidget_.get());
     uWidget_->setMatrixWithSquarerootRight(U, norms_inv_U);
@@ -251,18 +256,19 @@ void MainWindow::handleSvdDecomposition() {
 }
 
 void MainWindow::handleJordanForm() {
+    operationWidget_->hideFunctionButtons();
     if(matrix_ == nullptr){
         QMessageBox::warning(this, "输入错误", "请先输入矩阵", QMessageBox::Ok);
         handleBack();
         return;
     }
     auto J = matrix_->getJordanForm();
-    QLabel* similarLabel = new QLabel("~", this);
-    similarLabel->setAlignment(Qt::AlignCenter);
-    similarLabel->setFixedSize(20, 50);
+    equalsLabel_ = std::make_shared<QLabel>("~", this);
+    equalsLabel_->setAlignment(Qt::AlignCenter);
+    equalsLabel_->setFixedSize(20, 50);
     auto centralWidget = this->centralWidget();
     auto layout = qobject_cast<QHBoxLayout*>(centralWidget->layout());
-    layout->addWidget(similarLabel);
+    layout->addWidget(equalsLabel_.get());
     jordanWidget_ = std::make_shared<BoardWidget>(J.getRows(), J.getCols(), this);
     jordanWidget_->setMatrix(J);
     layout->addWidget(jordanWidget_.get());
@@ -271,6 +277,7 @@ void MainWindow::handleJordanForm() {
 // 实现 handleBack 槽函数
 void MainWindow::handleBack() {
     operationWidget_->showStartButton();
+    operationWidget_->showFunctionButtons();
     boardWidget_.reset();
     detWidget_.reset();
     permutationWidget_.reset();
@@ -286,6 +293,7 @@ void MainWindow::handleBack() {
     vWidget_.reset();
     jordanWidget_.reset();
     setupUi();
+    equalsLabel_.reset();
 }
 
 void MainWindow::handleFileInputMatrix() {
@@ -437,7 +445,7 @@ void MainWindow::handleBoxInputMatrix() {
                     if (input.contains("/")) {
                         QStringList parts = input.split("/");
                         if (parts.size() != 2) {
-                            QMessageBox::warning(this, "输入错误", "分数格式不正确，请输入如 'a/b' 的格式。", QMessageBox::Ok);
+                            QMessageBox::warning(this, "输入错误", "分���格式不正确，请输入如 'a/b' 的格式。", QMessageBox::Ok);
                             j--;
                             continue; // 跳过当前循环，等待用户重新输入
                         }
@@ -569,7 +577,7 @@ void MainWindow::handleIostreamInputMatrix() {
                         long long denominator = parts[1].toLongLong(&denominatorOk);
 
                         if (numeratorOk && denominatorOk && denominator != 0) {
-                            matrix.setEntry(i, j, Entry(numerator, denominator)); // 使用 setEntry 方法设置矩阵元素
+                            matrix.setEntry(i, j, Entry(numerator, denominator)); // 使用 setEntry 方法设置矩阵��素
                             boardWidget_->setMatrix(matrix); // 更新 BoardWidget 显示矩阵
                             QApplication::processEvents(); // 处理事件，更新界面
                             break; // 输入有效，退出循环
