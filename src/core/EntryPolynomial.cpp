@@ -1,6 +1,9 @@
 #include "EntryPolynomial.h"
 #include <algorithm>
 #include <iostream>
+#include <limits>
+#include <cmath>
+
 EntryPolynomial::EntryPolynomial(const std::vector<Entry>& coefficients) : coefficients_(coefficients) {}
 
 EntryPolynomial::~EntryPolynomial() {}
