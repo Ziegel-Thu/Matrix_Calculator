@@ -1,121 +1,49 @@
-name: Matrix Calculator CI
+name: Build and Deploy Qt App
 
 on:
   push:
-    branches: [ MinGW-GitHub ]
+    branches:
+      - main
   pull_request:
-    branches: [ MinGW-GitHub ]
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: windows-latest
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Qt
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: '6.5.0'
-        host: 'windows'
-        target: 'desktop'
-        arch: 'win64_mingw'
-        tools: 'tools_mingw90'
-        
-    - name: Set up CMake
-      uses: lukka/get-cmake@latest
-      
-    - name: Configure CMake
-      run: |
-        mkdir build_windows
-        cd build_windows
-        cmake .. -G "MinGW Makefiles" `
-          -DCMAKE_BUILD_TYPE=Release `
-          -DCMAKE_CXX_FLAGS="-fpermissive" `
-          -DCMAKE_CXX_STANDARD=17
-      shell: pwsh
-      
-    - name: Build
-      run: |
-        cd build_windows
-        cmake --build . --config Release
-        if ($LASTEXITCODE -ne 0) {
-          exit $LASTEXITCODE
-        }
-      shell: pwsh
-        
-    - name: Check build output
-      run: |
-        cd build_windows
-        Get-ChildItem -Recurse -Filter *.exe
-      shell: pwsh
-        
-    - name: Deploy Qt
-      run: |
-        cd build_windows
-        
-        # 设置 Qt 目录变量
-        $QtDir = "D:\a\Matrix_Calculator\Qt\6.5.0\mingw_64"
-        $BuildDir = "$(pwd)"
-        
-        # 设置环境变量
-        $env:PATH = "$QtDir\bin;$env:PATH"
-        $env:QT_PLUGIN_PATH = "$BuildDir"
-        $env:QT_QPA_PLATFORM_PLUGIN_PATH = "$BuildDir\platforms"
-        
-        # 创建插件目录
-        New-Item -ItemType Directory -Force -Path "platforms"
-        New-Item -ItemType Directory -Force -Path "styles"
-        New-Item -ItemType Directory -Force -Path "imageformats"
-        
-        # 复制 Qt DLL
-        Copy-Item "$QtDir\bin\Qt6Core.dll" .
-        Copy-Item "$QtDir\bin\Qt6Gui.dll" .
-        Copy-Item "$QtDir\bin\Qt6Widgets.dll" .
-        
-        # 复制 MinGW 运行时
-        Copy-Item "$QtDir\bin\libgcc_s_seh-1.dll" .
-        Copy-Item "$QtDir\bin\libstdc++-6.dll" .
-        Copy-Item "$QtDir\bin\libwinpthread-1.dll" .
-        
-        # 复制插件
-        Copy-Item "$QtDir\plugins\platforms\qwindows.dll" "platforms\"
-        Copy-Item "$QtDir\plugins\styles\qwindowsvistastyle.dll" "styles\"
-        Copy-Item "$QtDir\plugins\imageformats\qgif.dll" "imageformats\"
-        Copy-Item "$QtDir\plugins\imageformats\qico.dll" "imageformats\"
-        Copy-Item "$QtDir\plugins\imageformats\qjpeg.dll" "imageformats\"
-        Copy-Item "$QtDir\plugins\imageformats\qsvg.dll" "imageformats\"
-        
-        # 运行 windeployqt
-        & "$QtDir\bin\windeployqt.exe" `
-          --release `
-          --no-translations `
-          --no-system-d3d-compiler `
-          --no-virtualkeyboard `
-          --no-quick-import `
-          --force `
-          --verbose 2 `
-          --dir "$BuildDir" `
-          matrix_calculator.exe
-        
-        # 检查文件
-        Write-Host "Deployed files:"
-        Get-ChildItem -Recurse
-      shell: pwsh
 
-    - name: List deployed files
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: 6.5.0
+        modules: qtbase, qttools
+        host: windows
+
+    - name: Install MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: mingw64
+        install: >
+          mingw-w64-x86_64-gcc
+          mingw-w64-x86_64-cmake
+          mingw-w64-x86_64-make
+
+    - name: Configure and Build
       run: |
-        cd build_windows
-        Get-ChildItem -Recurse
-      shell: pwsh
-        
-    - name: Upload artifacts
+        cmake -G "MinGW Makefiles" -B build_windows -DCMAKE_BUILD_TYPE=Release
+        cmake --build build_windows --target all --config Release
+
+    - name: Package Application
+      run: |
+        cmake --install build_windows --prefix package
+        windeployqt --dir package build_windows/matrix_calculator.exe
+
+    - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: matrix-calculator-windows
-        path: |
-          build_windows/*.exe
-          build_windows/*.dll
-          build_windows/platforms/
-          build_windows/styles/
-          build_windows/imageformats/
+        name: MatrixCalculator
+        path: package
