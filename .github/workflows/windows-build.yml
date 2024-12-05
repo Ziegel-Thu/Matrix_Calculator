@@ -44,15 +44,21 @@ jobs:
         }
       shell: pwsh
         
+    - name: Check build output
+      run: |
+        cd build_windows
+        dir /s /b *.exe
+      shell: pwsh
+        
     - name: Deploy Qt
       run: |
         cd build_windows
-        windeployqt.exe Release/matrix_calculator.exe
+        windeployqt.exe matrix_calculator.exe
         
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
         name: matrix-calculator-windows
         path: |
-          build_windows/Release/*.exe
-          build_windows/Release/*.dll
+          build_windows/*.exe
+          build_windows/*.dll
