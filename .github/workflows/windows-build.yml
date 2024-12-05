@@ -1,4 +1,4 @@
-name: Matrix Calculator CI
+ name: Matrix Calculator CI
 
 on:
   push:
@@ -47,4 +47,4 @@ jobs:
         name: matrix-calculator-windows
         path: |
           build/Release/*.exe
-          build/Release/*.dll 
+          build/Release/*.dll
