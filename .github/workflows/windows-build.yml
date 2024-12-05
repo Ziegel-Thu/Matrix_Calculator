@@ -1,4 +1,4 @@
- name: Matrix Calculator CI
+name: Matrix Calculator CI
 
 on:
   push:
@@ -27,18 +27,18 @@ jobs:
       
     - name: Configure CMake
       run: |
-        mkdir build
-        cd build
+        mkdir build_windows
+        cd build_windows
         cmake .. -G "MinGW Makefiles"
       
     - name: Build
       run: |
-        cd build
+        cd build_windows
         cmake --build . --config Release
         
     - name: Deploy Qt
       run: |
-        cd build
+        cd build_windows
         windeployqt.exe Release/matrix_calculator.exe
         
     - name: Upload artifacts
@@ -46,5 +46,5 @@ jobs:
       with:
         name: matrix-calculator-windows
         path: |
-          build/Release/*.exe
-          build/Release/*.dll
+          build_windows/Release/*.exe
+          build_windows/Release/*.dll
