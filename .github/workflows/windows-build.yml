@@ -1,0 +1,50 @@
+name: Matrix Calculator CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.5.0'
+        host: 'windows'
+        target: 'desktop'
+        arch: 'win64_mingw'
+        tools: 'tools_mingw90'
+        
+    - name: Set up CMake
+      uses: lukka/get-cmake@latest
+      
+    - name: Configure CMake
+      run: |
+        mkdir build
+        cd build
+        cmake .. -G "MinGW Makefiles"
+      
+    - name: Build
+      run: |
+        cd build
+        cmake --build . --config Release
+        
+    - name: Deploy Qt
+      run: |
+        cd build
+        windeployqt.exe Release/matrix_calculator.exe
+        
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: matrix-calculator-windows
+        path: |
+          build/Release/*.exe
+          build/Release/*.dll 
