@@ -647,7 +647,6 @@ Matrix Matrix::getOrthogonalEigenBasis(const std::vector<std::pair<Entry, int> >
             temp.setEntry(i, i, temp.getEntry(i, i) - eigenvalue);
         }
         auto decomp = temp.getGramSchimdtQRDecomposition();
-        const Matrix& Q = std::get<0>(decomp);
         const Matrix& R = std::get<1>(decomp);
         const std::vector<int>& pivotIndex = std::get<2>(decomp);
         const std::vector<int>& nullIndex = std::get<3>(decomp);
