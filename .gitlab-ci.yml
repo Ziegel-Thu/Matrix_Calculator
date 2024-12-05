@@ -1,5 +1,6 @@
 stages:
   - build
+  - upload_artifacts
 
 build-mingw32:
   stage: build
@@ -10,6 +11,10 @@ build-mingw32:
     - wine $HOME/.wine/drive_c/Qt/Tools/mingw1120_64/bin/mingw32-make.exe
     - wine $HOME/.wine/drive_c/Qt/6.7.0/mingw_64/bin/windeployqt.exe release/
   artifacts:
+    name: "matrix_calculator_windows_${CI_COMMIT_SHA}"
     paths:
       - build/release/
     expire_in: 1 week
+    expose_as: 'Windows Build'
+  only:
+    - for_Matrix_Calculator
