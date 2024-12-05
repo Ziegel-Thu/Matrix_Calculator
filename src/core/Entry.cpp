@@ -1,17 +1,23 @@
 #include "Entry.h"
+#include "ErrorHandler.h"
 #include <stdexcept>
 #include <limits>
 #include <iostream>
 #include <cmath>
 #include <algorithm>
+
 Entry::Entry(long long numerator, long long denominator) {
     if (denominator == 0) {
-        throw std::invalid_argument("Denominator cannot be zero");
+        emit ErrorHandler::getInstance().errorOccurred("分母不能为零");
+        fraction_ = {0, 1};
+        hasValue_ = false;
+        return;
     }
     fraction_ = {numerator, denominator};
     reduce();
-    hasValue_ = false;
+    hasValue_ = true;
 }
+
 Entry::~Entry() {
 }   
 long long Entry::getNumerator() const {
@@ -50,9 +56,9 @@ Entry Entry::operator+(const Entry& other) const {
     long long denominator = fraction_.second * other.fraction_.second;
 
     if (numerator > std::numeric_limits<long long>::max() || numerator < std::numeric_limits<long long>::min()) {
-        throw std::overflow_error("Addition result exceeds long long limits");
+        emit ErrorHandler::getInstance().errorOccurred("加法结果超出范围");
+        return Entry(0, 1);
     }
-
     return Entry(numerator, denominator);
 }
 
@@ -61,9 +67,9 @@ Entry Entry::operator-(const Entry& other) const {
     long long denominator = fraction_.second * other.fraction_.second;
 
     if (numerator > std::numeric_limits<long long>::max() || numerator < std::numeric_limits<long long>::min()) {
-        throw std::overflow_error("Subtraction result exceeds long long limits");
+        emit ErrorHandler::getInstance().errorOccurred("减法结果超出范围");
+        return Entry(0, 1);
     }
-
     return Entry(numerator, denominator);
 }
 
@@ -72,9 +78,9 @@ Entry Entry::operator*(const Entry& other) const {
     long long denominator = fraction_.second * other.fraction_.second;
 
     if (numerator > std::numeric_limits<long long>::max() || numerator < std::numeric_limits<long long>::min()) {
-        throw std::overflow_error("Multiplication result exceeds long long limits");
+        emit ErrorHandler::getInstance().errorOccurred("乘法结果超出范围");
+        return Entry(0, 1);
     }
-
     return Entry(numerator, denominator);
 }
 
@@ -92,14 +98,16 @@ bool Entry::operator!=(const Entry& other) const {
 
 Entry Entry::operator/(const Entry& other) const {
     if (other.fraction_.first == 0) {
-        throw std::invalid_argument("Cannot divide by zero");
+        emit ErrorHandler::getInstance().errorOccurred("不能除以零");
+        return Entry(0, 1);
     }
     long long numerator = fraction_.first * other.fraction_.second;
     long long denominator = fraction_.second * other.fraction_.first;
 
     if (numerator > std::numeric_limits<long long>::max() || numerator < std::numeric_limits<long long>::min() ||
         denominator > std::numeric_limits<long long>::max() || denominator < std::numeric_limits<long long>::min()) {
-        throw std::overflow_error("Division result exceeds long long limits");
+        emit ErrorHandler::getInstance().errorOccurred("除法结果超出范围");
+        return Entry(0, 1);
     }
 
     return Entry(numerator, denominator);

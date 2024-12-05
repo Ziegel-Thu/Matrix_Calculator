@@ -18,6 +18,8 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QTextStream>
+#include "ErrorHandler.h"
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     auto centralWidget = new QWidget(this);
     auto mainLayout = new QHBoxLayout(centralWidget); // 使用水平布局
@@ -26,6 +28,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     setCentralWidget(centralWidget);
     setupUi();
     setWindowTitle("矩 阵 计 算 器"); // 设置窗口标题
+
+    // 连接错误处理器
+    connect(&ErrorHandler::getInstance(), &ErrorHandler::errorOccurred,
+            this, [this](const QString& message) {
+                QMessageBox::warning(this, "错误", message, QMessageBox::Ok);
+                handleBack();
+            });
 
     // 连接 OperationWidget 的信号到 MainWindow 的槽
 
@@ -348,7 +357,7 @@ void MainWindow::handleFileInputMatrix() {
             
             if (elements.size() != cols) {
                 QMessageBox::warning(this, "格式错误", 
-                    QString("第%1行元素数量不正确").arg(i + 1), QMessageBox::Ok);
+                    QString("第%1行元素数量不��确").arg(i + 1), QMessageBox::Ok);
                 handleBack();
                 return;
             }
@@ -436,7 +445,7 @@ void MainWindow::handleBoxInputMatrix() {
                 QString input = QInputDialog::getText(this, "输入矩阵元素", QString("请输入第 %1 行第 %2 列的元素:").arg(i + 1).arg(j + 1), QLineEdit::Normal, "", &ok2);
                 if (ok2) {
                     if (input.isEmpty()) {
-                        QMessageBox::warning(this, "输入错误", "输入不能为空，请重新输入。", QMessageBox::Ok);
+                        QMessageBox::warning(this, "输入错误", "输入不能为空，���重新输入。", QMessageBox::Ok);
                         j--; // 重新输入当前元素
                         continue; // 跳过当前循环，等待用户重新输入
                     }
@@ -445,7 +454,7 @@ void MainWindow::handleBoxInputMatrix() {
                     if (input.contains("/")) {
                         QStringList parts = input.split("/");
                         if (parts.size() != 2) {
-                            QMessageBox::warning(this, "输入错误", "分���格式不正确，请输入如 'a/b' 的格式。", QMessageBox::Ok);
+                            QMessageBox::warning(this, "输入错误", "分格式不正确，请输入如 'a/b' 的格式。", QMessageBox::Ok);
                             j--;
                             continue; // 跳过当前循环，等待用户重新输入
                         }
@@ -577,7 +586,7 @@ void MainWindow::handleIostreamInputMatrix() {
                         long long denominator = parts[1].toLongLong(&denominatorOk);
 
                         if (numeratorOk && denominatorOk && denominator != 0) {
-                            matrix.setEntry(i, j, Entry(numerator, denominator)); // 使用 setEntry 方法设置矩阵��素
+                            matrix.setEntry(i, j, Entry(numerator, denominator)); // 使用 setEntry 方法设置矩阵素
                             boardWidget_->setMatrix(matrix); // 更新 BoardWidget 显示矩阵
                             QApplication::processEvents(); // 处理事件，更新界面
                             break; // 输入有效，退出循环
