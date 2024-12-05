@@ -3,7 +3,7 @@
 #include <QWidget>
 #include <QGridLayout>
 #include <QLabel>
-#include "Matrix.h" // 引入 Matrix 类
+#include "../core/Matrix.h" // 引入 Matrix 类
 
 class BoardWidget : public QWidget {
     Q_OBJECT
