@@ -79,7 +79,6 @@ void MainWindow::handleLuDecomposition() {
     }
     // 使用用户输入的矩阵进行 PLU 分解
     auto [P, L, U] = matrix_->pluDecomposition(); // 调用 PLU 分解
-
     // 获取 centralWidget 的现有布局
     auto centralWidget = this->centralWidget();
     auto layout = qobject_cast<QHBoxLayout*>(centralWidget->layout());

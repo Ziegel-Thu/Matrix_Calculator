@@ -705,8 +705,14 @@ std::tuple<Matrix, Matrix, Matrix> Matrix::getSVDdecomposition() const
     Matrix U(AAT.getRows(), AAT.getCols());
     Matrix Sigma(rows_, cols_);
     std::vector<std::pair<Entry, int>> eigenvalues1 = AAT.getEigenvalues();
+    if(eigenvalues1.size()==0){
+        return std::make_tuple(Matrix(1,1), Matrix(1,1), Matrix(1,1));
+    }
     U = AAT.getOrthogonalEigenBasis(eigenvalues1);
     std::vector<std::pair<Entry, int>> eigenvalues2 = ATA.getEigenvalues();
+    if(eigenvalues2.size()==0){
+        return std::make_tuple(Matrix(1,1), Matrix(1,1), Matrix(1,1));
+    }
     V = ATA.getOrthogonalEigenBasis(eigenvalues2);
     std::vector<std::pair<Entry, int>> eigenvalues = rows_ < cols_ ? eigenvalues1 : eigenvalues2;
     int pos = 0;
@@ -756,6 +762,9 @@ Matrix Matrix::getJordanForm() const
     }
     Matrix result(rows_,cols_);
     std::vector<std::pair<Entry,int>> eigenvalues = getEigenvalues();
+    if(eigenvalues.size()==0){
+        return Matrix(1,1);
+    }
     int currentCol = 0;
     while(eigenvalues.size()>0){
         Entry eigenvalue = eigenvalues.back().first;
@@ -763,8 +772,7 @@ Matrix Matrix::getJordanForm() const
         std::vector<int> blockSize;
         Matrix temp = *this;
         for(int i = 0;i<rows_;i++){
-            for(int j = 0
-            ;j<cols_;j++){
+            for(int j = 0;j<cols_;j++){
                 if(i == j){
                     temp.setEntry(i,j,temp.getEntry(i,j)-eigenvalue);                    
                 }
